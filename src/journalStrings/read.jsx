@@ -1,71 +1,65 @@
-import React from "react";
-import sanitizeHtml from "sanitize-html";
-import { message } from "antd";
-import EntryNav from "../navs/entryNav";
-import { onEdit, onView } from "../component/redux";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import db from "../component/dbaccess";
+import { useHistory } from "react-router-dom";
+import ReadOnline from "./readOnline";
+import ReadOffline from "./readOffline";
+import { setActiveEntry } from "../component/redux";
+import SnackBar from "../component/snackBar";
 
-const mapDispatchToRead = dispatch => ({
-  onEdit: data => dispatch(onEdit(data)),
-  onView: () => dispatch(onView())
-});
-
-const mapStateToRead = state => {
-  const { readerData } = state;
-  return { readerData };
+const mapStateToRead = (state) => {
+  return state;
 };
 
+const mapDispatchToRead = (dispatch) => ({
+  setActiveEntry: (data) => dispatch(setActiveEntry(data)),
+});
+
 function ReadConstruct(props) {
-  const { status } = props;
-  const { subject, entry, date, time } = props.readerData;
+  const [online, setOnline] = useState(true);
+  const history = useHistory();
 
-  const createMarkup = () => ({ __html: sanitizeHtml(entry) });
+  const entryIdStatus = !!props.activeEntry.entryId;
 
-  const myComponent = () => {
-    return <div dangerouslySetInnerHTML={createMarkup()}></div>;
+  const choose = (entryId) => {
+    db.savedEntries
+      .where("entryId")
+      .equals(entryId)
+      .count()
+      .then((val) => {
+        if (val <= 0) {
+          db.unsavedEntries
+            .where("entryId")
+            .equals(entryId)
+            .count()
+            .then((val) => {
+              if (val <= 0) {
+                console.log("invalidEntry");
+              } else {
+                setOnline(false);
+              }
+            });
+        } else {
+          setOnline(true);
+        }
+      });
   };
 
-  const onEditClick = () => {
-    props.onEdit(props.readerData);
-  };
-
-  const onDelete = e => {
-    message.success("Deleting...");
-    props.onDelete(props.readerData);
-  };
-
-  const cancel = e => {
-    message.error("Cancelled");
-  };
+  useEffect(() => {
+    if (!entryIdStatus) {
+      db.activeEntry.toArray().then((val) => {
+        if (val.length === 0) return history.push("/");
+        props.setActiveEntry(val[0]);
+        choose(val[0].entryId);
+      });
+    } else {
+      choose(props.activeEntry.entryId);
+    }
+  }, []);
 
   return (
     <div>
-      <nav>
-        <EntryNav
-          status={status}
-          onEditClick={onEditClick}
-          onDelete={onDelete}
-          cancel={cancel}
-          onView={props.onView}
-        />
-      </nav>
-
-      <div className="container">
-        <div className="card unfixed" style={{ minHeight: "80vh" }}>
-          <div className="card-header">
-            <h5 className="card-title">{subject}</h5>
-            <div className="ml-auto">
-              <small>
-                {date}
-                {"  "} : {"  "}
-                {time}
-              </small>
-            </div>
-          </div>
-
-          <div className="card-body">{myComponent()}</div>
-        </div>
-      </div>
+      {online === true ? <ReadOnline /> : <ReadOffline />} <SnackBar />
     </div>
   );
 }

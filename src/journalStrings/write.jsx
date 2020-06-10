@@ -1,24 +1,16 @@
 import React from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import Spinner from "../component/spinner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Diary(props) {
-  const {
-    subjectError,
-    disabled,
-    onSubmit,
-    subject,
-    entry,
-    onView,
-    status,
-    msg
-  } = props;
+  const { subjectError, disabled, onSubmit, subject, entry, status } = props;
 
-  const onEntryChange = content => {
+  const onEntryChange = (content) => {
     props.onEntryChange(content);
   };
 
-  const onSubjectChange = e => {
+  const onSubjectChange = (e) => {
     props.onSubjectChange(e);
   };
 
@@ -49,15 +41,15 @@ function Diary(props) {
             "pagebreak spellchecker media nonbreaking anchor",
             "table emoticons template wordcount",
             "searchreplace visualblocks visualchars code fullscreen",
-            "insertdatetime media  paste code help"
+            "insertdatetime media  paste code help",
           ],
           menu: {
-            favs: { title: "myFavorite", items: "emoticons spellchecker" }
+            favs: { title: "myFavorite", items: "emoticons spellchecker" },
           },
           toolbar:
             "undo redo | insertdatetime | formatselect | bold italic forecolor backcolor | hr pagebreak nonbreaking searchreplace table | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | emoticons removeformat | help",
           menubar: "fav file edit view insert format",
-          content_css: "tinymce/skins/content/writer/content.css"
+          content_css: "tinymce/skins/content/writer/content.css",
           //entity_encoding: "named"
         }}
         value={entry}
@@ -72,29 +64,10 @@ function Diary(props) {
           disabled={disabled}
         >
           Save {"  "}
-          <i className="fas fa-save"></i> {"  "}
+          <FontAwesomeIcon icon="save" /> {"  "}
           <Spinner status={status} />
         </button>
-        <button
-          className="btn btn-outline-danger my-2"
-          aria-controls="cancel-button"
-          onClick={onView}
-        >
-          cancel {"  "}
-          <i className="fas fa-times"></i>
-        </button>
       </div>
-
-      <span className="text-success">{msg}</span>
-
-      <button
-        onClick={onView}
-        aria-controls="write-button"
-        className="btn btn-outline-primary write-btn"
-        style={{ fontSize: "1.5rem" }}
-      >
-        <i className="fas fa-book-open"></i>
-      </button>
     </div>
   );
 }

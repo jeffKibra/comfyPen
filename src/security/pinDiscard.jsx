@@ -1,63 +1,56 @@
-import React, { Component } from "react";
+import React from "react";
 import db from "../component/dbaccess";
-import MyNav from "../navs/myNav";
+import PagesNav from "../navs/pagesNav";
+import { connect } from "react-redux";
+import { checkKey } from "../component/redux";
 
-class PinDiscard extends Component {
-  state = {
-    set: false
-  };
+const mapStateToPinDiscard = (state) => {
+  return state;
+};
 
-  componentDidMount() {
-    db.secret.count().then(val => {
-      if (val === 0) {
-        this.setState({ set: false });
-      } else {
-        this.setState({ set: true });
-      }
-    });
-  }
+const mapDispatchToPinDiscard = (dispatch) => ({
+  checkKey: (data) => dispatch(checkKey(data)),
+});
 
-  discard = () => {
-    db.secret.clear().then(() => {
-      this.setState({ set: false });
+function PinDiscardConstruct(props) {
+  const discard = () => {
+    db.pin.clear().then(() => {
+      props.checkKey({ storageKey: false });
     });
   };
 
-  render() {
-    const { set } = this.state;
-
-    return (
-      <>
-        <nav>
-          <MyNav />
-        </nav>
-
-        <div className="container unfixed">
-          <div className="card col col-sm-6 col-md-4 col-lg-3 bg-info mx-auto my-3">
-            <div className="card-body mx-auto">
-              {set === true && (
-                <>
-                  <p>Are you sure you want to discard your pin?</p>
-                  <button
-                    className="btn btn-outline-warning"
-                    onClick={this.discard}
-                  >
-                    Discard
-                  </button>
-                </>
-              )}
-              {set === false && (
-                <p>
-                  Pin discarded. To set another pin, please head over to menu >
-                  security.
-                </p>
-              )}
-            </div>
+  return (
+    <>
+      <nav>
+        <PagesNav></PagesNav>
+      </nav>
+      <div className="container unfixed">
+        <div className="card col col-sm-6 col-md-4 col-lg-3 bg-info mx-auto my-3">
+          <div className="card-body mx-auto">
+            {props.storageKey === true && (
+              <>
+                <p>Are you sure you want to discard your pin?</p>
+                <button className="btn btn-outline-warning" onClick={discard}>
+                  Discard
+                </button>
+              </>
+            )}
+            {props.storageKey === false && (
+              <p>
+                Pin discarded. To set another pin, please head over to menu >
+                security.
+              </p>
+            )}
           </div>
         </div>
-      </>
-    );
-  }
+      </div>
+    </>
+  );
 }
+
+const PinDiscard = connect(
+  mapStateToPinDiscard,
+  mapDispatchToPinDiscard
+)(PinDiscardConstruct);
 
 export default PinDiscard;

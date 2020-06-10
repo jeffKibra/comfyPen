@@ -1,7 +1,12 @@
 import React from "react";
 import Snackbar from "@material-ui/core/Snackbar";
+import { connect } from "react-redux";
 
-export default function SnackBar(props) {
+const mapStateToSnackBar = (state) => {
+  return state;
+};
+
+function SnackBarConstruct(props) {
   const [open, setOpen] = React.useState(false);
   const handleClick = () => {
     setOpen(true);
@@ -32,3 +37,7 @@ export default function SnackBar(props) {
     </div>
   );
 }
+
+const SnackBar = connect(mapStateToSnackBar)(SnackBarConstruct);
+
+export default SnackBar;

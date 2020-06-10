@@ -3,24 +3,33 @@ import Fetcher from "../component/server";
 import EditableComponent from "./editableComponent";
 import SnackBar from "../component/snackBar";
 import $ from "jquery";
+import { connect } from "react-redux";
+import { setMsg } from "../component/redux";
 
-class EditableContainer extends Component {
+const mapDispatchToEditabelContainer = (dispatch) => ({
+  setMsg: (msg) => dispatch(setMsg(msg)),
+});
+
+class EditableContainerConstruct extends Component {
   state = {
     editFormOpen: false,
-    open: false,
-    msg: ""
+    status: false,
   };
 
-  onJournalDelete = id => {
+  onJournalDelete = (id) => {
+    this.setState({ status: true });
     Fetcher({ journalid: id, submit: "DELETEJOURNAL" }, "DELETE")
-      .then(val => {
-        this.setState({ msg: "deleted" });
+      .then((val) => {
+        if (!val.value) throw new Error("false value");
+        this.setState({ status: false });
+        this.props.setMsg({ msg: "deleted" });
         $("#snackBarTrigger").trigger("click");
         //console.log(val);
         this.props.refreshJournal();
       })
-      .catch(err => {
-        this.setState({ msg: "deletion failed" });
+      .catch((err) => {
+        this.setState({ status: false });
+        this.props.setMsg({ msg: "deletion failed" });
         $("#snackBarTrigger").trigger("click");
         this.props.refreshJournal();
         //console.log(err);
@@ -46,10 +55,15 @@ class EditableContainer extends Component {
           editFormOpen={this.state.editFormOpen}
           journal={this.props.journal}
         />
-        <SnackBar msg={this.state.msg} />
+        <SnackBar />
       </>
     );
   }
 }
+
+const EditableContainer = connect(
+  null,
+  mapDispatchToEditabelContainer
+)(EditableContainerConstruct);
 
 export default EditableContainer;

@@ -2,67 +2,22 @@ function journalList(data) {
   return { type: "JOURNAL_LIST", data };
 }
 
-function entries(data) {
-  return { type: "ENTRIES", data };
+function savedEntries(data) {
+  return { type: "SAVED_ENTRIES", data };
 }
 
 function unsavedEntries(data) {
   return { type: "UNSAVED_ENTRIES", data };
 }
 
-function openJournal(id) {
-  return { type: "OPEN_JOURNAL", journalId: id };
-}
-
-function closeJournal() {
-  return { type: "CLOSE_JOURNAL" };
-}
-
-function onEdit(data) {
+function setActiveEntry(data) {
   return {
-    type: "ON_EDIT",
-    readerData: {},
-    editorData: data,
-    edit: true,
-    read: false,
-    write: false
+    type: "ACTIVE_ENTRY",
+    activeEntry: data,
   };
 }
 
-function onRead(data) {
-  return {
-    type: "ON_READ",
-    readerData: data,
-    editorData: {},
-    edit: false,
-    read: true,
-    write: false
-  };
-}
-
-function onWrite() {
-  return {
-    type: "ON_WRITE",
-    readerData: {},
-    editorData: {},
-    edit: false,
-    read: false,
-    write: true
-  };
-}
-
-function onView() {
-  return {
-    type: "ON_VIEW",
-    readerData: {},
-    editorData: {},
-    edit: false,
-    read: false,
-    write: false
-  };
-}
-
-function activeJournal(data) {
+function setActiveJournal(data) {
   return { type: "ACTIVE_JOURNAL", data };
 }
 
@@ -82,19 +37,19 @@ function checkKey(data) {
   return { type: "CHECK_KEY", data };
 }
 
+function setMsg(data) {
+  return { type: "SET_MSG", data };
+}
+
 export {
   unsavedEntries,
   journalList,
-  activeJournal,
-  entries,
+  setActiveJournal,
+  savedEntries,
   offlineEntry,
   setKey,
   isLogged,
   checkKey,
-  openJournal,
-  closeJournal,
-  onRead,
-  onEdit,
-  onWrite,
-  onView
+  setActiveEntry,
+  setMsg,
 };

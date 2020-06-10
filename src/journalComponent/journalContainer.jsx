@@ -1,47 +1,39 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { journalList, checkKey } from "../component/redux";
+import { journalList, checkKey, isLogged } from "../component/redux";
 import db from "../component/dbaccess";
-import Fetcher from "../component/server";
 import JournalComponent from "./journalComponent";
+import MainNav from "../navs/mainNav";
 
-const mapStateToJournalContainer = state => {
-  const storageKey = state.storageKey;
-  return { storageKey };
+const mapStateToJournalContainer = (state) => {
+  return state;
 };
 
-const mapDispatchToJournalContainer = dispatch => ({
-  checkKey: data => dispatch(checkKey(data)),
-  displayJournal: newJournal => dispatch(journalList(newJournal))
+const mapDispatchToJournalContainer = (dispatch) => ({
+  checkKey: (data) => dispatch(checkKey(data)),
+  journalList: (newJournal) => dispatch(journalList(newJournal)),
+  isLogged: (data) => dispatch(isLogged(data)),
 });
 
 class JournalContainerConstruct extends Component {
   state = {
-    diaryid: "",
-    journalUpdate: [],
-    journalDelete: [],
-    status: false
+    status: false,
   };
 
   componentDidMount() {
-    db.secret.count().then(value => {
+    db.pin.count().then((value) => {
       if (value === 0) {
-        if (this.props.storageKey) {
-          this.props.checkKey({ storageKey: false });
-        }
+        this.props.checkKey({ storageKey: false });
       } else {
-        if (!this.props.storageKey) {
-          this.props.checkKey({ storageKey: true });
-        }
+        this.props.checkKey({ storageKey: true });
       }
     });
-    db.users.toArray().then(value => {
-      if (value.length === 0 || value[0].accessToken === "") {
+    db.token.toArray().then((value) => {
+      if (value.length === 0 || value[0].comfy === "") {
+        this.props.isLogged({ logged: false });
         this.dbRefresh();
       } else {
-        this.setState({
-          diaryid: value[0].id
-        });
+        this.props.isLogged({ logged: true });
         this.refreshJournal();
       }
     });
@@ -49,53 +41,33 @@ class JournalContainerConstruct extends Component {
 
   refreshJournal = () => {
     this.setState({ status: true });
-    Fetcher({ submit: "READER" }, "POST")
-      .then(res => {
-        if (res.value === false) {
-          throw new Error("false value");
-        }
-        this.setState({ status: false });
-        //console.log(res);
-        db.onlineJournalList
-          .clear()
-          .then(() => {
-            if (res.value !== 0) {
-              res.forEach(val => {
-                db.onlineJournalList.add(val);
-              });
-            }
-          })
-          .then(() => {
-            this.dbRefresh();
-          });
-      })
-      .catch(err => {
-        this.setState({ status: false });
-        this.dbRefresh();
-        //console.log(err);
-      });
+
+    this.setState({ status: false });
+
+    this.dbRefresh();
   };
 
   dbRefresh = () => {
-    db.onlineJournalList.toArray().then(val => {
-      this.props.displayJournal(val);
+    db.customJournalsList.toArray().then((val) => {
       this.setState({ status: false });
+      this.props.journalList(val);
     });
   };
 
   render() {
     return (
       <>
-        <JournalComponent
-          diaryid={this.state.diaryid}
-          status={this.state.status}
-          refreshJournal={this.refreshJournal}
-        />
-        <button
-          onClick={this.refreshJournal}
-          id="refresh"
-          style={{ display: "none" }}
-        ></button>
+        <nav>
+          <MainNav />
+        </nav>
+        <div className="unfixed container">
+          <JournalComponent />
+          <button
+            onClick={this.refreshJournal}
+            id="refresh"
+            style={{ display: "none" }}
+          ></button>
+        </div>
       </>
     );
   }

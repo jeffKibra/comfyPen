@@ -1,37 +1,32 @@
-import React, { useState } from "react";
-import { openJournal } from "../component/redux";
+import React from "react";
+import * as moment from "moment";
+import { setActiveJournal } from "../component/redux";
 import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import db from "../component/dbaccess";
 
-const mapDispatchToJournalDisplay = dispatch => ({
-  openJournal: id => dispatch(openJournal(id))
+const mapDispatchToJournalDisplay = (dispatch) => ({
+  setActiveJournal: (journal) => dispatch(setActiveJournal(journal)),
 });
 
 function JournalDisplayConstruct(props) {
-  const {
-    journalname,
-    journaldescription,
-    date,
-    time,
-    journalid
-  } = props.journal;
-  const [logged, setLogged] = useState(true);
+  const history = useHistory();
+  const journal = props.journal;
 
-  const openJournal = () => {
-    db.users.toArray().then(val => {
-      if (val.length === 0 || val[0].accessToken === "") {
-        setLogged(false);
-      } else {
-        setLogged(true);
-        props.openJournal(journalid);
-      }
+  const { journalName, journalDescription, createdAt } = journal;
+
+  const activeJournal = () => {
+    props.setActiveJournal(journal);
+    db.activeJournal.clear().then(() => {
+      db.activeJournal.add(journal);
     });
+
+    history.push("/onlineList");
   };
 
-  if (!logged) {
-    return <Redirect to="/login" />;
-  }
+  const date = moment(createdAt).format("LL");
+  const time = moment(createdAt).format("LTS");
 
   return (
     <div
@@ -43,34 +38,35 @@ function JournalDisplayConstruct(props) {
         className="card mx-auto col-12 bg-info text-warning  "
       >
         <div className="card-body">
-          <h4>{journalname}</h4>
-          <p>{journaldescription}</p>
+          <h4>{journalName}</h4>
+          <p>{journalDescription}</p>
 
           <small>
-            {date}, {"  "} {time}
+            {!!date === true || ""}, {"  "} {!!time === true || ""}
           </small>
         </div>
         <div className="btn-group mx-auto my-2">
-          <button onClick={openJournal} className="btn btn-outline-warning">
+          <button onClick={activeJournal} className="btn btn-outline-warning">
             {" "}
-            Open {"  "} <i className="fas fa-folder-open"></i>
+            Open {"  "} <FontAwesomeIcon icon="folder-open" />
           </button>
-          <button
-            onClick={props.onEditClick}
-            className="btn btn-outline-warning"
-          >
-            <i className="fas fa-edit"></i>
-          </button>
-          <button
-            onClick={props.onTrashClick}
-            className="btn btn-outline-danger"
-          >
-            <i className="fas fa-trash-alt"></i>
-          </button>
+          {journalName === "Notes..." || journalName === "Diary..." || (
+            <>
+              <button
+                onClick={props.onEditClick}
+                className="btn btn-outline-warning"
+              >
+                <FontAwesomeIcon icon="edit" />
+              </button>
+              <button
+                onClick={props.onTrashClick}
+                className="btn btn-outline-danger"
+              >
+                <FontAwesomeIcon icon="trash-alt" />
+              </button>
+            </>
+          )}
         </div>
-        {/*<Link to={`/journals/${id}`} className="btn btn-outline-primary">
-      Open <i className="fas fa-folder-open"></i>
-    </Link> */}
       </div>
     </div>
   );

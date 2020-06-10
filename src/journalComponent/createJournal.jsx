@@ -1,17 +1,24 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import * as moment from "moment";
+//import * as moment from "moment";
 import { uuid } from "uuidv4";
 import JournalForm from "./journalForm";
 import db from "../component/dbaccess";
 import Fetcher from "../component/server";
-import { journalList } from "../component/redux";
-import MainBackdrop from "../component/backdrop";
+import { journalList, setMsg } from "../component/redux";
 import SnackBar from "../component/snackBar";
+import fetchJournalList from "../component/fetchJournalList";
 import $ from "jquery";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Spinner from "../component/spinner";
 
-const mapDispatchToCreate = dispatch => ({
-  displayJournal: newJournal => dispatch(journalList(newJournal))
+const mapStateToCreate = (state) => {
+  return state;
+};
+
+const mapDispatchToCreate = (dispatch) => ({
+  journalList: (newJournal) => dispatch(journalList(newJournal)),
+  setMsg: (msg) => dispatch(setMsg(msg)),
 });
 
 class CreateNewJournalConstruct extends Component {
@@ -19,78 +26,71 @@ class CreateNewJournalConstruct extends Component {
     status: false,
     alowed: false,
     isOpen: false,
-    logged: false,
-    msg: "",
     journalname: "",
-    journaldescription: ""
+    journaldescription: "",
   };
 
   onFormOpen = () => {
-    this.setState({ isOpen: true });
-    db.users.count().then(val => {
-      if (val === 0) {
-        this.setState({ logged: false });
-      } else {
-        this.setState({ status: true, logged: true });
-        Fetcher({ submit: "READER" }, "POST").then(val => {
-          this.setState({ status: false });
-          if (val.length >= 0 && val.length <= 3) {
-            this.setState({ allowed: true });
-          } else {
-            this.onFormClose();
-            this.setState({
-              allowed: false,
-              msg: "max number of journals reached"
-            });
+    this.setState({ status: true });
+    console.log(this.state);
+    Fetcher({ submit: "journalsNumber" }, "POST")
+      .then((val) => {
+        this.setState({ status: false, isOpen: true });
+        if (val.value >= 0 && val.value <= 5) {
+          this.setState({ allowed: true });
+        } else {
+          this.onFormClose();
+          this.setState({
+            allowed: false,
+          });
+          this.props.setMsg({ msg: "max number of journals reached" });
 
-            $("#snackBarTrigger").trigger("click");
-          }
+          $("#snackBarTrigger").trigger("click");
+        }
+      })
+      .catch((err) => {
+        this.setState({
+          status: false,
+          allowed: false,
         });
-      }
-    });
+        this.props.setMsg({ msg: "you are offline" });
+        $("#snackBarTrigger").trigger("click");
+        this.onFormClose();
+      });
   };
+
   onFormClose = () => {
     this.setState({ isOpen: false });
   };
 
-  onFormSubmit = formData => {
+  onFormSubmit = (formData) => {
     this.setState({ status: true });
-    const date = moment().format("LL");
-    const time = moment().format("LTS");
+    //const date = moment().format("LL");
+    //const time = moment().format("LTS");
     const journalData = {
-      journalname: formData.journalName,
-      journaldescription: formData.journalDescription,
-      journalid: uuid(),
-      date: date,
-      time: time,
-      submit: "JOURNAL"
+      journalName: formData.journalName,
+      journalDescription: formData.journalDescription,
+      journalId: uuid(),
+      createdAt: new Date().toISOString(),
+      submit: "newJournal",
     };
     Fetcher(journalData, "POST")
-      .then(val => {
-        this.setState({ msg: "successfully created" });
+      .then((val) => {
+        if (!val.value) throw new Error("false value");
+        this.props.setMsg({ msg: "successfully created" });
         $("#snackBarTrigger").trigger("click");
         //console.log(val);
-        Fetcher({ submit: "READER" }, "POST").then(res => {
-          this.setState({ status: false });
-          db.onlineJournalList
-            .clear()
-            .then(() => {
-              res.forEach(val => {
-                db.onlineJournalList.add(val);
-              });
-            })
-            .then(() => {
-              db.onlineJournalList.toArray().then(val => {
-                this.props.displayJournal(val);
-              });
-            });
-        });
+        const res1 = fetchJournalList();
+        console.log(res1);
+        this.props.journalList(res1);
+        this.setState({ status: false });
       })
-      .catch(err => {
-        db.onlineJournalList.toArray().then(val => {
-          this.props.displayJournal(val);
+      .catch((err) => {
+        this.setState({ status: false });
+        db.customJournalsList.toArray().then((val) => {
+          this.props.journalList(val);
         });
-        this.setState({ msg: "failed to create" });
+        this.props.setMsg({ msg: "failed to create" });
         $("#snackBarTrigger").trigger("click");
         //console.log(err);
       });
@@ -98,28 +98,15 @@ class CreateNewJournalConstruct extends Component {
   };
 
   render() {
-    const {
-      journalname,
-      journaldescription,
-      msg,
-      isOpen,
-      logged,
-      status,
-      allowed
-    } = this.state;
+    const { journalname, journaldescription, isOpen, allowed } = this.state;
     return (
       <>
-        {isOpen === true && (
+        {isOpen === true ? (
           <div className="card col-sm-9 col-md-7 col-lg-6 bg-info mx-auto my-3">
             <div className="card-body">
-              {logged === false && (
+              {this.props.logged === true ? (
                 <>
-                  <p>Only allowed for logged in users!</p>
-                </>
-              )}
-              {logged === true && (
-                <>
-                  {allowed === true && (
+                  {allowed === true ? (
                     <JournalForm
                       journalname={journalname}
                       journaldescription={journaldescription}
@@ -127,34 +114,43 @@ class CreateNewJournalConstruct extends Component {
                       onFormClose={this.onFormClose}
                       btnText="Create"
                     />
+                  ) : (
+                    <p>
+                      Currently limited to a maximum of three custom journals!
+                    </p>
                   )}
-                  {allowed === false && (
-                    <p>Only a maximum of Three custom journals are allowed</p>
-                  )}
+                </>
+              ) : (
+                <>
+                  <p>Must be logged in to have Access!</p>
                 </>
               )}
             </div>
           </div>
-        )}
-        {isOpen === false && (
+        ) : (
           <div className="mx-auto">
             <button
               onClick={this.onFormOpen}
               className="btn btn-outline-info mx-auto my-4"
             >
-              new Journal <i className="fas fa-plus"></i>
+              new Journal{" "}
+              {this.state.status === true ? (
+                <Spinner status={this.state.status} />
+              ) : (
+                <FontAwesomeIcon icon="plus" />
+              )}
             </button>
           </div>
         )}
-        <MainBackdrop status={status} />
-        <SnackBar msg={msg} />
+
+        <SnackBar />
       </>
     );
   }
 }
 
 const CreateNewJournal = connect(
-  null,
+  mapStateToCreate,
   mapDispatchToCreate
 )(CreateNewJournalConstruct);
 

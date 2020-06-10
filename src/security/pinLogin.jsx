@@ -4,43 +4,33 @@ import { setKey, isLogged, checkKey } from "../component/redux";
 import { connect } from "react-redux";
 import PinForm from "./pinForm";
 
-const mapStateToPinLogin = state => ({
+const mapStateToPinLogin = (state) => ({
   securityKey: state.securityKey,
   logged: state.logged,
-  storageKey: state.storageKey
+  storageKey: state.storageKey,
 });
-const mapDispatchToPinLogin = dispatch => ({
-  setKey: data => dispatch(setKey(data)),
-  checkKey: data => dispatch(checkKey(data)),
-  isLogged: data => dispatch(isLogged(data))
+const mapDispatchToPinLogin = (dispatch) => ({
+  setKey: (data) => dispatch(setKey(data)),
+  checkKey: (data) => dispatch(checkKey(data)),
+  isLogged: (data) => dispatch(isLogged(data)),
 });
 
-class PinLoginConstruct extends Component {
-  componentDidMount() {
-    db.secret.count().then(val => {
-      if (val !== 0) {
-        this.props.checkKey({ storageKey: true });
-      }
-    });
-  }
-
-  access = data => {
-    db.secret
-      .where("key")
+function PinLoginConstruct(props) {
+  const access = (data) => {
+    db.pin
+      .where("pin")
       .equals(data.pin)
       .count()
-      .then(value => {
+      .then((value) => {
         if (value === 0) {
           alert("invalid key");
         } else {
-          this.props.setKey(data);
+          props.setKey(data);
         }
       });
   };
 
-  render() {
-    return <PinForm next={this.access} />;
-  }
+  return <PinForm next={access} />;
 }
 
 const PinLogin = connect(

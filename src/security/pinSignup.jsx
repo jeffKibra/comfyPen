@@ -1,89 +1,56 @@
-import React, { Component } from "react";
+import React from "react";
 import db from "../component/dbaccess";
 import SnackBar from "../component/snackBar";
-import MyNav from "../navs/myNav";
 import KeyForm from "./keyForm";
+import PagesNav from "../navs/pagesNav";
+import { connect } from "react-redux";
+import { checkKey } from "../component/redux";
 
-class PinSignup extends Component {
-  state = {
-    open: false,
-    set: false,
-    logged: false
-  };
+const mapStateToPinSignup = (state) => {
+  return state;
+};
 
-  componentDidMount() {
-    db.users.count().then(val => {
-      if (val === 0) {
-        this.setState({ logged: false });
-      } else {
-        this.setState({ logged: true });
-      }
-    });
-    db.secret.count().then(val => {
-      if (val === 0) {
-        this.setState({ set: false });
-      } else {
-        this.setState({ set: true });
-      }
-    });
-  }
+const mapDispatchToPinSignup = (dispatch) => ({
+  checkKey: (data) => dispatch(checkKey(data)),
+});
 
-  pinSignup = data => {
+function PinSignupConstruct(props) {
+  const pinSignup = (data) => {
     const keyData = {
-      key: data.pin
+      key: data.pin,
     };
-    db.secret.clear().then(() => {
-      db.secret
+    db.pin.clear().then(() => {
+      db.pin
         .add(keyData)
         .then(() => {
-          this.setState({ open: true, set: true });
-          //props.checkKey({ storageKey: true });
+          props.checkKey({ storageKey: true });
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
     });
   };
 
-  render() {
-    return (
-      <>
-        <nav>
-          <MyNav />
-        </nav>
-        <div className="container unfixed">
-          <div className="card col col-sm-6 col-md-4 col-lg-3 mx-auto bg-info my-3">
-            <div className="card-body mx-auto">
-              {this.state.logged === false && (
-                <>
-                  <p>
-                    Please Ensure that you are logged in before attempting to
-                    create a pin!
-                  </p>
-                </>
-              )}
-              {this.state.logged === true && (
-                <>
-                  {this.state.set === false && (
-                    <KeyForm onSubmit={this.pinSignup} />
-                  )}
-                  {this.state.set === true && (
-                    <>
-                      <p>
-                        You have a pin already set. To change or remove your
-                        pin, head over to menu > security options!
-                      </p>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
+  return (
+    <>
+      <nav>
+        <PagesNav></PagesNav>
+      </nav>
+      <div className="container unfixed">
+        <div className="card col col-sm-6 col-md-4 col-lg-3 mx-auto bg-info my-3">
+          <div className="card-body mx-auto">
+            <KeyForm onSubmit={pinSignup} />
           </div>
-          <SnackBar open={this.state.open} msg="pin set" />
         </div>
-      </>
-    );
-  }
+        <SnackBar msg="pin set" />
+      </div>
+    </>
+  );
 }
+
+const PinSignup = connect(
+  mapStateToPinSignup,
+  mapDispatchToPinSignup
+)(PinSignupConstruct);
 
 export default PinSignup;

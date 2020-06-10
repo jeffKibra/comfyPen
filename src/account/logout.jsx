@@ -1,18 +1,23 @@
 import React, { Component } from "react";
-import Nav from "../navs/myNav";
+import PagesNav from "../navs/pagesNav";
 import db from "../component/dbaccess";
+import Fetcher from "../component/server";
+import { withRouter } from "react-router-dom";
 
 class Logout extends Component {
   state = {
-    status: false
+    status: false,
   };
 
   onLogout = () => {
-    db.users.clear().then(() => {
-      db.secret.clear().then(() => {
-        db.onlineJournalList.clear().then(() => {
-          db.savedEntries.clear().then(() => {
-            this.setState({ status: true });
+    Fetcher({ submit: "logout" }, "POST").then((val) => {
+      db.user.clear().then(() => {
+        db.pin.clear().then(() => {
+          db.customJournalsList.clear().then(() => {
+            db.savedEntries.clear().then(() => {
+              this.setState({ status: true });
+              this.props.history.push("/account");
+            });
           });
         });
       });
@@ -24,7 +29,7 @@ class Logout extends Component {
     return (
       <>
         <nav>
-          <Nav />
+          <PagesNav></PagesNav>
         </nav>
         <div className="container unfixed">
           <div className="card col-sm-6 col-md-4 mx-auto bg-info text-white ">
@@ -56,4 +61,4 @@ class Logout extends Component {
   }
 }
 
-export default Logout;
+export default withRouter(Logout);

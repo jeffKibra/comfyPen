@@ -1,10 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import MyNav from "../navs/myNav";
 
 function PinForm(props) {
   const { register, handleSubmit, errors } = useForm({
-    mode: "onChange"
+    mode: "onChange",
   });
 
   const onFormSubmit = (data, e) => {
@@ -14,10 +13,6 @@ function PinForm(props) {
 
   return (
     <>
-      <nav>
-        <MyNav />
-      </nav>
-
       <div className="container unfixed">
         <div className="card col col-sm-6 col-md-4 col-lg-3 bg-info mx-auto my-3">
           <div className="card-body mx-auto">
@@ -38,12 +33,12 @@ function PinForm(props) {
                   ref={register({
                     required: {
                       value: true,
-                      message: "please provide a surname"
+                      message: "please provide a surname",
                     },
                     minLength: {
                       value: 4,
-                      message: "your pin must be atleast 4 characters long"
-                    }
+                      message: "your pin must be atleast 4 characters long",
+                    },
                   })}
                   className="form-control"
                   placeholder="pin"

@@ -8,9 +8,9 @@ export default async function Fetcher(data, method) {
     const refreshResponse = await refreshToken();
     console.log(refreshResponse);
 
-    const fetch2 = await db.users.clear().then(() => {
-      return db.users.add(refreshResponse).then(() => {
-        if (refreshResponse.accessToken !== "") {
+    const fetch2 = await db.token.clear().then(() => {
+      return db.token.add(refreshResponse).then(() => {
+        if (refreshResponse.comfy !== "") {
           return realFetcher(data, method);
         } else {
           return { value: false };
@@ -26,7 +26,7 @@ export default async function Fetcher(data, method) {
 }
 
 function refreshToken() {
-  return fetch(`/api/stylus`, {
+  return fetch(`http://localhost:5000/api/stylus`, {
     method: "POST",
     headers: new Headers({
       "content-type": "application/json",
@@ -36,13 +36,13 @@ function refreshToken() {
 }
 
 function realFetcher(data, method) {
-  return db.users.toArray().then((val) => {
+  return db.token.toArray().then((val) => {
     console.log(val);
     let complex = {};
     if (
-      data.submit === "LOGIN" ||
-      data.submit === "SIGNUP" ||
-      data.submit === "EMAIL"
+      data.submit === "login" ||
+      data.submit === "signup" ||
+      data.submit === "checkEmail"
     ) {
       complex = {
         headers: new Headers({
@@ -54,7 +54,7 @@ function realFetcher(data, method) {
       complex = {
         headers: new Headers({
           "content-type": "application/json",
-          Authorization: "Bearer " + val[0].accessToken,
+          Authorization: "Bearer " + val[0].comfy,
         }),
       };
     }

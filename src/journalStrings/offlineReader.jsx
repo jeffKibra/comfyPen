@@ -1,124 +1,79 @@
-import React, { Component } from "react";
-import OfflineTable from "./offlineTable";
-import db from "../component/dbaccess";
+import React, { useEffect } from "react";
+import OfflineList from "./offlineList";
 import { connect } from "react-redux";
-import { unsavedEntries } from "../component/redux";
-import Read from "./read";
-import Updater from "./updater";
-import sanitizeHtml from "sanitize-html";
-import { onEdit, onRead, onWrite } from "../component/redux";
-import SnackBar from "../component/snackBar";
+import WriteBtn from "./writeBtn";
+import PagesNav from "../navs/pagesNav";
+import { Link } from "react-router-dom";
 import $ from "jquery";
+import { useHistory } from "react-router-dom";
+import db from "../component/dbaccess";
+import { setActiveJournal, unsavedEntries } from "../component/redux";
 
-const mapStateToOfflineReader = state => {
-  const { read, edit, journalId } = state;
-
-  const myJournal = { ...state.onlineJournal };
-  return { myJournal, read, edit, journalId };
+const mapStateToOfflineReader = (state) => {
+  return state;
 };
 
-const mapDispatchToOfflineReader = dispatch => ({
-  unsavedEntries: data => dispatch(unsavedEntries(data)),
-  onRead: data => dispatch(onRead(data)),
-  onEdit: data => dispatch(onEdit(data)),
-  onWrite: () => dispatch(onWrite())
+const mapDispatchToOfflineReader = (dispatch) => ({
+  setActiveJournal: (data) => dispatch(setActiveJournal(data)),
+  unsavedEntries: (data) => dispatch(unsavedEntries(data)),
 });
 
-class OfflineReaderConstruct extends Component {
-  state = {
-    status: false,
+function OfflineReaderConstruct(props) {
+  const { activeJournal } = props;
+  const history = useHistory();
 
-    msg: ""
-  };
-
-  componentDidMount() {
-    db.unsavedEntries
-      .where("journalid")
-      .equals(this.props.journalId)
-      .toArray()
-      .then(val => {
-        this.props.unsavedEntries(val);
+  useEffect(() => {
+    const journalIdState = !!props.activeJournal.journalId;
+    if (!journalIdState) {
+      db.activeJournal.toArray().then((val) => {
+        if (val.length === 0) return history.push("/");
+        props.setActiveJournal(val[0]);
+        const journalId = val[0].journalId;
+        db.unsavedEntries
+          .where("journalId")
+          .equals(journalId)
+          .toArray()
+          .then((val) => {
+            props.unsavedEntries(val);
+            console.log(val);
+          });
       });
-  }
+    }
+    $("#fetchEntriesList").trigger("click");
+  }, []);
 
-  onDelete = data => {
-    this.setState({ status: true });
-    db.unsavedEntries.delete(data.entryid).then(() => {
-      this.setState({ status: false, msg: "Deleted" });
-      $("#snackBarTrigger").trigger("click");
-      db.unsavedEntries
-        .where("journalid")
-        .equals(this.props.myJournal.journalid)
-        .toArray()
-        .then(val => {
-          this.props.unsavedEntries(val);
-        });
-    });
-  };
-
-  onUpdate = data => {
-    this.setState({ status: true });
-    const appData = {
-      ...this.state.editorData,
-      subject: sanitizeHtml(data.subject),
-      entry: sanitizeHtml(data.entry),
-      journalid: this.props.myJournal.journalid,
-      submit: "ENTRY"
-    };
-
-    db.unsavedEntries.put(appData).then(() => {
-      db.unsavedEntries
-        .where("journalid")
-        .equals(this.props.myJournal.journalid)
-        .toArray()
-        .then(val => {
-          this.props.unsavedEntries(val);
-          this.setState({ status: false, msg: "updated" });
-          $("#snackBarTrigger").trigger("click");
-        });
-    });
-  };
-
-  render() {
-    const {
-      myJournal,
-      fetchList,
-      unsavedEntries,
-      switchToOnline,
-      edit,
-      read
-    } = this.props;
-    const { status, msg } = this.state;
-
-    return (
-      <>
-        {edit === true && (
-          <div>
-            <Updater
-              status={status}
-              onEntry={this.onUpdate}
-              fetchList={fetchList}
-            />
-          </div>
-        )}
-        {read === true && <Read status={status} onDelete={this.onDelete} />}
-        {read === false && edit === false && (
-          <>
-            <OfflineTable
-              switchToOnline={switchToOnline}
-              unsavedEntries={unsavedEntries}
-              fetchList={fetchList}
-              journalid={myJournal.journalid}
-              journal={myJournal.unsavedEntries}
-              onDelete={this.onDelete}
-              //reveal onWriter
-            />
-          </>
-        )}
-        <SnackBar msg={msg} />
-      </>
-    );
-  }
+  return (
+    <>
+      <nav>
+        <PagesNav header={activeJournal.journalName}>
+          <span
+            onClick={() => {
+              $("#saveUnsavedEntries").trigger("click");
+            }}
+          >
+            save Selected
+          </span>
+          <Link to="/onlineList" style={{ color: "#000" }}>
+            savedEntries
+          </Link>
+          <Link to="/write" style={{ color: "#000" }}>
+            write
+          </Link>
+          <span
+            onClick={() => {
+              $("#fetchEntriesList").trigger("click");
+            }}
+          >
+            refresh
+          </span>
+        </PagesNav>
+      </nav>
+      <div className="unfixed">
+        <OfflineList journal={activeJournal.unsavedEntries} />
+      </div>
+      <WriteBtn />
+    </>
+  );
 }
 
 const OfflineReader = connect(

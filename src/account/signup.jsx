@@ -7,7 +7,7 @@ import { Steps } from "antd";
 import logo from "../diary144.png";
 import EmailForm from "./emailForm";
 import PasswordForm from "./passwordForm";
-import Nav from "../navs/myNav";
+import PagesNav from "../navs/pagesNav";
 import SnackBar from "../component/snackBar";
 import $ from "jquery";
 
@@ -48,7 +48,7 @@ class Signup extends Component {
     const email = this.state.email;
     const msg = validateEmail(email);
     if (msg === "") {
-      const emailData = { email, submit: "EMAIL" };
+      const emailData = { email, submit: "checkEmail" };
       this.setState({ status: true });
       Fetcher(emailData, "POST")
         .then((res) => {
@@ -98,7 +98,7 @@ class Signup extends Component {
       ...formData,
       email: this.state.email,
       id: uuid(),
-      submit: "SIGNUP",
+      submit: "signup",
     };
 
     //console.log(signupData);
@@ -150,7 +150,7 @@ class Signup extends Component {
     return (
       <>
         <nav>
-          <Nav />
+          <PagesNav></PagesNav>
         </nav>
 
         <div className="container unfixed">
@@ -208,7 +208,7 @@ class Signup extends Component {
               </div>
             </div>
           </div>
-          <SnackBar msg={msg} />
+          <SnackBar />
         </div>
       </>
     );

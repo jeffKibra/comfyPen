@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useForm } from "react-hook-form";
-import UnsavedNav from "../navs/unsavedNav";
-
+import { connect } from "react-redux";
+import { setActiveEntry } from "../component/redux";
+import { useHistory } from "react-router-dom";
+import * as moment from "moment";
+import db from "../component/dbaccess";
 import {
   Divider,
   Badge,
@@ -14,38 +17,46 @@ import {
   ListItemText,
   ListItemAvatar,
   ListSubheader,
-  ListItemSecondaryAction
+  ListItemSecondaryAction,
 } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     maxWidth: "100vw",
     backgroundColor: theme.palette.background.paper,
     position: "relative",
-    overflow: "auto"
+    overflow: "auto",
   },
   listSection: {
-    backgroundColor: "inherit"
+    backgroundColor: "inherit",
   },
   ul: {
     backgroundColor: "inherit",
-    padding: 0
+    padding: 0,
   },
   inline: {
-    display: "inline"
+    display: "inline",
   },
   check: {
-    marginRight: theme.spacing(2)
-  }
+    marginRight: theme.spacing(2),
+  },
 }));
 
-const OfflineJournal = props => {
+const mapStateToOfflineEntry = (state) => {
+  return state;
+};
+
+const mapDispatchToOfflineEntry = (dispatch) => ({
+  setActiveEntry: (data) => dispatch(setActiveEntry(data)),
+});
+
+const OfflineEntryConstruct = (props) => {
   const classes = useStyles();
-  const { journal, switchToOnline } = props;
+  const { activeJournal } = props;
 
   const { register, handleSubmit, setValue } = useForm({
-    mode: "onChange"
+    mode: "onChange",
   });
 
   const onFormSubmit = (data, e) => {
@@ -55,30 +66,30 @@ const OfflineJournal = props => {
 
   const [allValues, setValues] = useState(false);
 
-  const onAllChange = e => {
+  const onAllChange = (e) => {
     setValues(e.target.checked);
   };
 
-  const unSavedEntries = journal.map((entry, index) => (
+  const unsavedEntries = activeJournal.unsavedEntries.map((entry, index) => (
     <UnsavedList
       setValue={setValue}
       register={register}
       value={allValues}
       entry={entry}
       key={index}
-      onRead={props.onRead}
+      setActiveEntry={props.setActiveEntry}
     />
   ));
 
   return (
     <>
-      <nav>
-        <UnsavedNav switchToOnline={switchToOnline} onWrite={props.onWrite} />
-      </nav>
       <div className="container unfixed">
         <List className={classes.root}>
           <ListSubheader>
-            <Badge badgeContent={journal.length} color="secondary">
+            <Badge
+              badgeContent={activeJournal.unsavedEntries.length}
+              color="secondary"
+            >
               <h6>My Notes</h6>
             </Badge>
             <Checkbox
@@ -91,11 +102,11 @@ const OfflineJournal = props => {
           <Divider component="li" />
 
           <form onSubmit={handleSubmit(onFormSubmit)}>
-            {unSavedEntries}
+            {unsavedEntries}
             <button
               style={{ display: "none" }}
               className="btn btn-outline-warning"
-              id="formBtn"
+              id="saveUnsavedEntries"
             >
               save
             </button>
@@ -106,27 +117,41 @@ const OfflineJournal = props => {
   );
 };
 
-export default OfflineJournal;
+const OfflineEntry = connect(
+  mapStateToOfflineEntry,
+  mapDispatchToOfflineEntry
+)(OfflineEntryConstruct);
+
+export default OfflineEntry;
 
 function UnsavedList(props) {
   const classes = useStyles();
   const { register } = props;
-  const { subject, date, time, entryid } = props.entry;
-  const onRead = () => {
-    props.onRead(props.entry);
+  const { subject, createdAt, entryId } = props.entry;
+  const history = useHistory();
+
+  const setActiveEntry = () => {
+    props.setActiveEntry(props.entry);
+    db.activeEntry.clear().then(() => {
+      db.activeEntry.add(props.entry);
+    });
+    history.push("/read");
   };
 
   const [checked, setValue] = useState(props.value);
   useEffect(() => {
     setValue(props.value);
   }, [props.value]);
-  const checkedChange = e => {
+  const checkedChange = (e) => {
     setValue(e.target.checked);
   };
 
+  const date = moment(createdAt).format("LL");
+  const time = moment(createdAt).format("LTS");
+
   return (
     <div>
-      <ListItem onClick={onRead} alignItems="flex-start">
+      <ListItem onClick={setActiveEntry} alignItems="flex-start">
         <ListItemAvatar>
           <Avatar>{subject.charAt(0)}</Avatar>
         </ListItemAvatar>
@@ -151,7 +176,7 @@ function UnsavedList(props) {
             inputRef={register}
             onChange={checkedChange}
             checked={checked}
-            name={entryid}
+            name={entryId}
           />
         </ListItemSecondaryAction>
       </ListItem>

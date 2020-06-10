@@ -1,143 +1,84 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
+import OnlineList from "./onlineList";
+import WriteBtn from "./writeBtn";
+import PagesNav from "../navs/pagesNav";
+import { Link } from "react-router-dom";
 import $ from "jquery";
-import { entries } from "../component/redux";
-import Fetcher from "../component/server";
-import Updater from "./updater";
-import Read from "./read";
-import ReadTable from "./readTable";
-import TableNav from "../navs/tableNav";
+import { useHistory } from "react-router-dom";
+import { setActiveJournal, savedEntries } from "../component/redux";
 import db from "../component/dbaccess";
-import SnackBar from "../component/snackBar";
-import { onEdit, onRead, onWrite, onView } from "../component/redux";
 
-const mapStateToOnlineReader = state => {
-  const journalid = state.journalId;
-  const { read, edit } = state;
-  const myJournal = { ...state.onlineJournal };
-  return { myJournal, read, edit, journalid };
+const mapStateToOnlineReader = (state) => {
+  return state;
 };
 
-const mapDispatchToOnlineReader = dispatch => ({
-  entries: data => dispatch(entries(data)),
-  onRead: data => dispatch(onRead(data)),
-  onEdit: data => dispatch(onEdit(data)),
-  onWrite: () => dispatch(onWrite()),
-  onView: () => dispatch(onView())
+const mapDispatchToOnlineReader = (dispatch) => ({
+  setActiveJournal: (data) => dispatch(setActiveJournal(data)),
+  savedEntries: (data) => dispatch(savedEntries(data)),
 });
 
-class OnlineReaderConstruct extends Component {
-  state = {
-    status: false,
+function OnlineReaderConstruct(props) {
+  const { activeJournal } = props;
+  const history = useHistory();
 
-    msg: ""
-  };
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.myJournal.journalid !== prevProps.myJournal.journalid) {
-      //this.updateStore();
+  useEffect(() => {
+    const journalIdState = !!props.activeJournal.journalId;
+    if (!journalIdState) {
+      db.activeJournal.toArray().then((val) => {
+        if (val.length === 0) return history.push("/");
+        props.setActiveJournal(val[0]);
+        const journalId = val[0].journalId;
+        db.savedEntries
+          .where("journalId")
+          .equals(journalId)
+          .toArray()
+          .then((val) => {
+            props.savedEntries(val);
+            console.log(val);
+          });
+      });
     }
-  }
+    $("#fetchEntriesList").trigger("click");
+  }, []);
 
-  onDelete = data => {
-    this.props.onView();
-    this.setState({ status: true });
-    const appData = {
-      ...data,
-      journalid: this.props.myJournal.journalid,
-      submit: "DELETEENTRY"
-    };
-
-    Fetcher(appData, "DELETE")
-      .then(res => {
-        if (res.value === false) {
-          //console.log(res);
-          throw new Error("false value");
-        } else {
-          db.savedEntries
-            .where("entryid")
-            .equals(data.entryid)
-            .delete();
-          this.setState({ status: false, msg: "Deleted" });
-          $("#snackBarTrigger").trigger("click");
-          this.props.fetchList();
-        }
-      })
-      .catch(err => {
-        this.setState({ status: false, msg: "Delete failed" });
-        $("#snackBarTrigger").trigger("click");
-        //console.log(err);
-      });
-  };
-
-  onUpdate = data => {
-    this.setState({ status: true });
-
-    const appData = {
-      ...data,
-      journalid: this.props.myJournal.journalid,
-      submit: "UPDATEENTRY"
-    };
-
-    Fetcher(appData, "PUT")
-      .then(res => {
-        if (res.value === false) {
-          //console.log(res);
-          throw new Error("false value");
-        } else {
-          this.setState({ status: false, msg: "updated" });
-          $("#snackBarTrigger").trigger("click");
-          this.props.fetchList();
-        }
-      })
-      .catch(err => {
-        //console.log(err);
-        this.setState({
-          status: false,
-          msg: "CANNOT UPDATE AN ENTRY WHILE OFFLINE"
-        });
-        $("#snackBarTrigger").trigger("click");
-      });
-  };
-
-  render() {
-    const { status, msg } = this.state;
-    const { myJournal, edit, read, switchToOffline, fetchList } = this.props;
-
-    return (
-      <>
-        {edit === true && (
-          <div>
-            <Updater
-              status={status}
-              onEntry={this.onUpdate}
-              fetchList={fetchList}
-            />
+  return (
+    <>
+      <nav>
+        <PagesNav header={activeJournal.journalName}>
+          <Link to="/offlineList" style={{ color: "#000" }}>
+            LocalEntries
+          </Link>
+          <Link to="/write" style={{ color: "#000" }}>
+            write
+          </Link>
+          <span
+            onClick={() => {
+              $("#fetchEntriesList").trigger("click");
+            }}
+          >
+            refresh
+          </span>
+        </PagesNav>
+      </nav>
+      <div className="unfixed">
+        {!!activeJournal.journalId === true ? (
+          <OnlineList journal={activeJournal.savedEntries} />
+        ) : (
+          <div className="container">
+            <div className="card col-sm-6 col-md-4 mx-auto my-3 bg-info">
+              <div className="card-body">
+                <p className="card-text">
+                  Please head over to the home page to select a journal to view
+                </p>
+              </div>
+            </div>
           </div>
         )}
-        {read === true && <Read status={status} onDelete={this.onDelete} />}
-        {edit === false && read === false && (
-          <>
-            <nav>
-              <TableNav
-                journalname={myJournal.journalname}
-                switchToOffline={switchToOffline}
-                onWrite={this.props.onWrite}
-              />
-            </nav>
-            <div className="unfixed">
-              <ReadTable
-                journal={myJournal.savedEntries}
-                onDelete={this.onDelete}
-                fetchList={fetchList}
-              />
-            </div>
-          </>
-        )}
-        <SnackBar msg={msg} />
-      </>
-    );
-  }
+      </div>
+      <WriteBtn />
+    </>
+  );
 }
 
 const OnlineReader = connect(

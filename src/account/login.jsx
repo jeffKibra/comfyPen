@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import LoginForm from "./loginForm";
 import db from "../component/dbaccess";
 import { connect } from "react-redux";
-import { isLogged } from "../component/redux";
+import { isLogged, setMsg } from "../component/redux";
 import Fetcher from "../component/server";
-import Nav from "../navs/myNav";
+import PagesNav from "../navs/pagesNav";
 import SnackBar from "../component/snackBar";
 import $ from "jquery";
 import logo from "../diary144.png";
@@ -13,23 +13,24 @@ import logo from "../diary144.png";
 const mapStateToLogin = (state) => ({
   logged: state.logged,
 });
+
 const mapDispatchToLogin = (dispatch) => ({
   isLogged: (data) => dispatch(isLogged(data)),
+  setMsg: (msg) => dispatch(setMsg(msg)),
 });
 
 class LoginConstruct extends Component {
   state = {
     status: false,
-    msg: "",
     email: "",
   };
 
   componentDidMount() {
-    db.users.count().then((val) => {
+    db.user.count().then((val) => {
       if (val === 0) {
         this.props.isLogged({ logged: false });
       } else {
-        db.users.toArray().then((val) => {
+        db.user.toArray().then((val) => {
           console.log(val);
           if (val[0].accessToken === "") {
             this.props.isLogged({ logged: false });
@@ -45,49 +46,47 @@ class LoginConstruct extends Component {
   handleFormSubmit = (formData) => {
     this.setState({ status: true });
 
-    const loginData = { ...formData, submit: "LOGIN" };
+    const loginData = { ...formData, submit: "login" };
     //console.log(loginData);
     Fetcher(loginData, "POST")
       .then((res) => {
         this.setState({ status: false });
         //console.log(res);
         if (res.value === false) {
-          this.setState({
-            msg: "Invalid username or password!",
-          });
+          this.props.setMsg({ msg: "Invalid username or password!" });
           $("#snackBarTrigger").trigger("click");
         } else {
-          this.setState({
-            msg: "Login Successful!",
-          });
+          this.props.setMsg({ msg: "Login Successful!" });
           $("#snackBarTrigger").trigger("click");
-          db.users.clear().then(() => {
-            db.users.add(res).then(() => {
+
+          db.user.clear().then(() => {
+            db.user.add({ email: res.email }).then(() => {
               this.props.isLogged({ logged: true });
-              db.users.toArray().then((val) => {
+              db.user.toArray().then((val) => {
                 this.setState({ email: val[0].email });
               });
             });
           });
+          db.token.clear().then(() => {
+            db.token.add({ comfy: res.comfy });
+          });
         }
       })
       .catch((err) => {
-        this.setState({
-          status: false,
-          msg: "Invalid username or password!",
-        });
+        this.setState({ status: false });
+        this.props.setMsg({ msg: "Invalid username or password!" });
         $("#snackBarTrigger").trigger("click");
         //console.log(err);
       });
   };
 
   render() {
-    const { msg, status, email } = this.state;
+    const { status, email } = this.state;
 
     return (
       <>
         <nav>
-          <Nav />
+          <PagesNav></PagesNav>
         </nav>
         <div className="container unfixed">
           <div className="card col-sm-6 col-md-4 mx-auto bg-info text-white ">
@@ -124,7 +123,7 @@ class LoginConstruct extends Component {
               </p>
             </div>
           </div>
-          <SnackBar msg={msg} />
+          <SnackBar />
         </div>
       </>
     );
