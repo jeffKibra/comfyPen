@@ -1,52 +1,52 @@
 import React, { Component } from "react";
-import Fetcher from "../component/server";
 import JournalForm from "./journalForm";
+import { connect } from "react-redux";
+import { setMsg } from "../component/redux";
+import { updateJournal } from "../journalStrings/firestoreRedux";
 
-class UpdateJournal extends Component {
-  state = {
-    status: false,
-    msg: "",
-    journal: this.props.journal
-  };
+const mapStateToUpdateJournal = (state) => {
+  return state;
+};
 
-  onJournalUpdate = formData => {
+const mapDispatchToUpdateJournal = (dispatch) => ({
+  setMsg: (msg) => dispatch(setMsg(msg)),
+  updateJournal: (data) => dispatch(updateJournal(data)),
+});
+
+class UpdateJournalConstruct extends Component {
+  onJournalUpdate = (formData) => {
     console.log(formData);
 
     const updateData = {
-      ...this.state.journal,
-      journalname: formData.journalName,
-      journaldescription: formData.journalDescription
+      ...this.props.journal,
+      journalName: formData.journalName,
+      journalDescription: formData.journalDescription,
     };
-    this.setState({ status: true });
-    Fetcher({ ...updateData, submit: "UPDATEJOURNAL" }, "PUT")
-      .then(res => {
-        this.setState({ status: false, msg: "updated" });
-        this.props.refreshJournal();
-        //console.log(res);
-        this.props.onFormClose();
-      })
-      .catch(err => {
-        this.setState({ status: false, msg: "update failed" });
-        this.props.refreshJournal();
-        this.props.onFormClose();
-      });
+
+    this.props.updateJournal(updateData);
+    this.props.onFormClose();
     //console.log(updateData);
   };
 
   render() {
-    const { journalname, journaldescription } = this.state.journal;
+    console.log(this.props);
+    const { journalName, journalDescription } = this.props.journal;
     return (
       <JournalForm
-        status={this.state.status}
-        msg={this.state.msg}
-        journalname={journalname}
-        journaldescription={journaldescription}
+        msg={this.props.msg}
+        journalName={journalName}
+        journalDescription={journalDescription}
         onFormSubmit={this.onJournalUpdate}
-        onFormClose={this.onFormClose}
+        onFormClose={this.props.onFormClose}
         btnText="Update"
       />
     );
   }
 }
+
+const UpdateJournal = connect(
+  mapStateToUpdateJournal,
+  mapDispatchToUpdateJournal
+)(UpdateJournalConstruct);
 
 export default UpdateJournal;

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { savedEntries, unsavedEntries } from "./redux";
+import { setEntriesList } from "./redux";
 import db from "./dbaccess";
 import Fetcher from "./server";
 import Spinner from "./spinner";
@@ -10,8 +10,7 @@ const mapStateToFetchEntries = (state) => {
 };
 
 const mapDispatchToFetchEntries = (dispatch) => ({
-  savedEntries: (data) => dispatch(savedEntries(data)),
-  unsavedEntries: (data) => dispatch(unsavedEntries(data)),
+  setEntriesList: (data) => dispatch(setEntriesList(data)),
 });
 
 class FetchEntriesConstruct extends Component {
@@ -47,14 +46,14 @@ class FetchEntriesConstruct extends Component {
   };
 
   refreshDb = (res) => {
-    db.savedEntries
+    db.entriesList
       .where("journalId")
-      .equals(this.props.journalId)
+      .equals(this.props.activeJournal.journalId)
       .delete()
       .then(() => {
         return res.forEach((anEntry) => {
           console.log(anEntry);
-          db.savedEntries.add(anEntry);
+          db.entriesList.add(anEntry);
         });
       })
       .then(() => {
@@ -66,25 +65,12 @@ class FetchEntriesConstruct extends Component {
   };
 
   updateStore = () => {
-    db.savedEntries
-      .where("journalId")
-      .equals(this.props.activeJournal.journalId)
-      .toArray()
-      .then((value) => {
-        this.props.savedEntries(value);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-    db.unsavedEntries
+    db.entriesList
       .where("journalId")
       .equals(this.props.activeJournal.journalId)
       .toArray()
       .then((val) => {
-        this.props.unsavedEntries(val);
-      })
-      .catch((err) => {
-        console.log(err.message);
+        this.props.setEntriesList(val);
       });
   };
 

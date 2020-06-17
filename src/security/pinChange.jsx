@@ -2,7 +2,13 @@ import React, { Component } from "react";
 import PinForm from "./pinForm";
 import PinSignup from "./pinSignup";
 import db from "../component/dbaccess";
-import PagesNav from "../navs/pagesNav";
+import $ from "jquery";
+import { setMsg } from "../component/redux";
+import { connect } from "react-redux";
+
+const mapDispatchToProps = (dispatch) => ({
+  setMsg: (msg) => dispatch(setMsg(msg)),
+});
 
 class PinChange extends Component {
   state = {
@@ -16,12 +22,16 @@ class PinChange extends Component {
       .equals(data.pin)
       .count()
       .then((val) => {
-        if (val === 0) {
-          alert("invalid pin");
-        } else {
-          db.pin.clear();
-          this.setState({ current });
-        }
+        if (val === 0) throw new Error("Invalid Pin!");
+        return db.pin.clear();
+      })
+      .then(() => {
+        this.setState({ current });
+      })
+      .catch((err) => {
+        this.props.setMsg({ msg: "Invalid Pin" });
+        $("#snackBarTrigger").trigger("click");
+        console.log(err.message);
       });
   };
 
@@ -30,24 +40,19 @@ class PinChange extends Component {
 
     return (
       <>
-        <nav>
-          <PagesNav></PagesNav>
-        </nav>
-        <>
-          {current === 0 && (
-            <>
-              <PinForm next={this.next} />
-            </>
-          )}
-          {current === 1 && (
-            <>
-              <PinSignup />
-            </>
-          )}
-        </>
+        {current === 0 && (
+          <>
+            <PinForm next={this.next} />
+          </>
+        )}
+        {current === 1 && (
+          <>
+            <PinSignup />
+          </>
+        )}
       </>
     );
   }
 }
 
-export default PinChange;
+export default connect(null, mapDispatchToProps)(PinChange);

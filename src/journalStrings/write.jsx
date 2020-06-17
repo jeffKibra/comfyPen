@@ -15,7 +15,7 @@ function Diary(props) {
   };
 
   return (
-    <div className="container">
+    <div>
       <div className="form-group">
         <label htmlFor="subject">
           <p className=" my-0 py-0 d-inline text-left">
@@ -34,7 +34,7 @@ function Diary(props) {
 
       <Editor
         init={{
-          height: "50vh",
+          height: "500",
           placeholder: "type here...",
           plugins: [
             "advlist autolink lists link image charmap print preview hr",

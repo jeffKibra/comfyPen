@@ -8,32 +8,35 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  ListSubheader
+  ListSubheader,
+  ListItemSecondaryAction,
+  IconButton,
 } from "@material-ui/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     maxWidth: "100vw",
     backgroundColor: theme.palette.background.paper,
     position: "relative",
     overflow: "auto",
-    maxHeight: 300
+    maxHeight: 300,
   },
   listSection: {
-    backgroundColor: "inherit"
+    backgroundColor: "inherit",
   },
   ul: {
     backgroundColor: "inherit",
-    padding: 0
+    padding: 0,
   },
   inline: {
-    display: "inline"
-  }
+    display: "inline",
+  },
 }));
 
-const Journal = props => {
-  const { date, time, subject } = props.records;
+const Journal = (props) => {
+  const { date, time, subject, saved } = props.records;
   const { readEntry } = props;
 
   const onReadClick = () => {
@@ -67,6 +70,13 @@ const Journal = props => {
               </React.Fragment>
             }
           />
+          <ListItemSecondaryAction>
+            <IconButton edge="end" aria-label="saved status">
+              <div className={saved === true ? "text-danger" : "text-success"}>
+                <FontAwesomeIcon icon="save" />
+              </div>
+            </IconButton>
+          </ListItemSecondaryAction>
         </ListItem>
         <Divider variant="inset" component="li" />
       </List>

@@ -1,64 +1,47 @@
-import React, { Component } from "react";
-import PagesNav from "../navs/pagesNav";
-import db from "../component/dbaccess";
-import Fetcher from "../component/server";
-import { withRouter } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { connect } from "react-redux";
+import { logoutAsync } from "./authRedux";
 
-class Logout extends Component {
-  state = {
-    status: false,
+const mapStateToLogout = (state) => state;
+
+const mapDispatchToLogout = (dispatch) => ({
+  logoutAsync: () => dispatch(logoutAsync()),
+});
+
+function LogoutConstruct(props) {
+  const history = useHistory();
+
+  useEffect(() => {
+    const { uid } = props.firebase.auth;
+    if (!uid) history.push("/account");
+  }, [props.firebase.auth, history]);
+
+  const onLogout = () => {
+    props.logoutAsync();
   };
 
-  onLogout = () => {
-    Fetcher({ submit: "logout" }, "POST").then((val) => {
-      db.user.clear().then(() => {
-        db.pin.clear().then(() => {
-          db.customJournalsList.clear().then(() => {
-            db.savedEntries.clear().then(() => {
-              this.setState({ status: true });
-              this.props.history.push("/account");
-            });
-          });
-        });
-      });
-    });
-  };
-
-  render() {
-    const { status } = this.state;
-    return (
-      <>
-        <nav>
-          <PagesNav></PagesNav>
-        </nav>
-        <div className="container unfixed">
-          <div className="card col-sm-6 col-md-4 mx-auto bg-info text-white ">
-            <div className="card-body">
-              {status === false && (
-                <>
-                  <h3 className="card-title">Logout?</h3>
-                  <p className="card-text">
-                    Are you sure you want to logout? Please note that all your
-                    unsaved records will be lost. Ensure you save any important
-                    entries to your online storage!!
-                  </p>
-                  <button
-                    onClick={this.onLogout}
-                    className="btn btn-outline-warning"
-                  >
-                    Logout
-                  </button>
-                </>
-              )}
-              {status === true && (
-                <p className="card-text">You have successfully logged out.</p>
-              )}
-            </div>
-          </div>
+  return (
+    <>
+      <div className="card col-sm-6 col-md-4 mx-auto bg-light ">
+        <div className="card-body">
+          <>
+            <h3 className="card-title">Logout?</h3>
+            <p className="card-text">
+              Are you sure you want to logout? Please note that all your unsaved
+              records will be lost. Ensure you save any important entries to
+              your online storage!!
+            </p>
+            <button onClick={onLogout} className="btn btn-outline-info">
+              Logout
+            </button>
+          </>
         </div>
-      </>
-    );
-  }
+      </div>
+    </>
+  );
 }
 
-export default withRouter(Logout);
+const Logout = connect(mapStateToLogout, mapDispatchToLogout)(LogoutConstruct);
+
+export default Logout;

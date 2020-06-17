@@ -1,24 +1,12 @@
 import React, { useState } from "react";
-import clsx from "clsx";
-import { Link } from "react-router-dom";
-import $ from "jquery";
-import FetchJournalList from "../component/fetchJournalList";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Menu as MaterialMenu,
-  MenuItem,
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  SwipeableDrawer,
-  List,
-  Divider,
-  ListItemIcon,
-  ListItem,
-  ListItemText,
-} from "@material-ui/core";
-import { MenuOutlined, MoreOutlined } from "@ant-design/icons";
+import { withRouter } from "react-router-dom";
+import { firestoreConnect } from "react-redux-firebase";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import MyDrawer from "./drawer";
+import NavBody from "./navBody";
+
+import { SwipeableDrawer } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,11 +22,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function MainNav(props) {
+const mapStateToProps = (state, ownProps) => {
+  const path = ownProps.location.pathname
+    .split("/")
+    .filter((val) => val !== "");
+  const journalId = path[0] === "onlineList" ? path[1] : "";
+  const { auth } = state.firebase;
+  return { auth, journalId };
+};
+
+function MainNavConstruct(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [state, setState] = React.useState(false);
+  let popMenu;
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -59,117 +57,76 @@ function MainNav(props) {
     setAnchorEl(null);
   };
 
-  const refreshJournal = () => {
-    $("#refresh").trigger("click");
-    handleClose();
-  };
-
-  const list = (anchor) => (
-    <div
-      className={clsx(classes.list, {
-        [classes.fullList]: anchor === "top" || anchor === "bottom",
-      })}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <List>
-        <ListItem button>
-          <ListItemText primary="Menu" />
-        </ListItem>
-        <Divider />
-        <Link to="/" style={{ color: "#000" }}>
-          <ListItem button>
-            <ListItemIcon>
-              <FontAwesomeIcon icon="home" />
-            </ListItemIcon>
-            <ListItemText primary="home" />
-          </ListItem>
-        </Link>
-
-        <Link to="/account" style={{ color: "#000" }}>
-          <ListItem button>
-            <ListItemIcon>
-              <FontAwesomeIcon icon="user" />
-            </ListItemIcon>
-            <ListItemText primary="account" />
-          </ListItem>
-        </Link>
-
-        <Link to="/security" style={{ color: "#000" }}>
-          <ListItem button>
-            <ListItemIcon>
-              <FontAwesomeIcon icon="user-shield" />
-            </ListItemIcon>
-            <ListItemText primary="privacy" />
-          </ListItem>
-        </Link>
-      </List>
-    </div>
-  );
-
   return (
     <>
-      <div className={classes.root}>
-        {" "}
-        <AppBar position="fixed">
-          {" "}
-          <Toolbar className={classes.toolBar}>
-            {" "}
-            <IconButton
-              edge="start"
-              onClick={toggleDrawer("left", true)}
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="menu"
-            >
-              {" "}
-              <MenuOutlined />
-              {"  "}
-            </IconButton>{" "}
-            <Typography variant="h6" className={classes.title}>
-              {" "}
-              ComfyPen{" "}
-            </Typography>{" "}
-            <FetchJournalList />
-            <div>
-              {" "}
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                {" "}
-                <MoreOutlined />{" "}
-              </IconButton>{" "}
-              <MaterialMenu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                keepMounted
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-                open={open}
-                onClose={handleClose}
-              >
-                {" "}
-                <MenuItem onClick={refreshJournal}>refresh</MenuItem>{" "}
-              </MaterialMenu>{" "}
-            </div>{" "}
-          </Toolbar>{" "}
-        </AppBar>{" "}
-      </div>
+      <NavBody
+        open={open}
+        anchorEl={anchorEl}
+        handleClose={handleClose}
+        handleMenu={handleMenu}
+        classes={classes}
+        toggleDrawer={toggleDrawer}
+        popMenu={popMenu}
+      ></NavBody>
       <SwipeableDrawer
         anchor="left"
         open={state}
         onClose={toggleDrawer("left", false)}
         onOpen={toggleDrawer("left", true)}
       >
-        {list("left")}
+        <MyDrawer classes={classes} toggleDrawer={toggleDrawer} anchor="left" />
       </SwipeableDrawer>
     </>
   );
 }
 
-export default MainNav;
+const MainNav = compose(
+  connect(mapStateToProps),
+  firestoreConnect((props) => {
+    const { journalId, auth } = props;
+    const arr = journalId
+      ? [
+          {
+            collection: "users",
+            doc: auth?.uid,
+            subcollections: [
+              { collection: "journals", orderBy: ["journalName", "desc"] },
+            ],
+            storeAs: "journals",
+          },
+          {
+            collection: "users",
+            doc: auth?.uid,
+            subcollections: [
+              {
+                collection: "journals",
+                doc: journalId,
+                subcollections: [
+                  {
+                    collection: "entries",
+                    orderBy: ["createdAt", "desc"],
+                    //limit: 10,
+                  },
+                ],
+                storeAs: "entries",
+              },
+            ],
+            storeAs: "entries",
+          },
+        ]
+      : [
+          {
+            collection: "users",
+            doc: auth?.uid,
+            subcollections: [
+              { collection: "journals", orderBy: ["journalName", "desc"] },
+            ],
+            storeAs: "journals",
+          },
+        ];
+    return auth?.uid ? arr : [];
+    // or `todos/${props.todoId}`
+  })
+)(MainNavConstruct);
+
+export default withRouter(MainNav);

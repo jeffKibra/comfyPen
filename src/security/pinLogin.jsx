@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import db from "../component/dbaccess";
 import { setKey, isLogged, checkKey } from "../component/redux";
 import { connect } from "react-redux";

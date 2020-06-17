@@ -2,8 +2,14 @@ import React, { Component } from "react";
 import Fetcher from "./server";
 import db from "./dbaccess";
 import Spinner from "./spinner";
+import { connect } from "react-redux";
+import { journalList } from "../component/redux";
 
-class fetchJournalList extends Component {
+const mapDispatchToFetchJournalList = (dispatch) => ({
+  journalList: (journals) => dispatch(journalList(journals)),
+});
+
+class FetchJournalListConstruct extends Component {
   state = {
     status: false,
   };
@@ -56,4 +62,9 @@ class fetchJournalList extends Component {
   }
 }
 
-export default fetchJournalList;
+const FetchJournalList = connect(
+  null,
+  mapDispatchToFetchJournalList
+)(FetchJournalListConstruct);
+
+export default FetchJournalList;

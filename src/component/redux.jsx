@@ -2,12 +2,8 @@ function journalList(data) {
   return { type: "JOURNAL_LIST", data };
 }
 
-function savedEntries(data) {
-  return { type: "SAVED_ENTRIES", data };
-}
-
-function unsavedEntries(data) {
-  return { type: "UNSAVED_ENTRIES", data };
+function setEntriesList(data) {
+  return { type: "ENTRIES_LIST", data };
 }
 
 function setActiveEntry(data) {
@@ -19,10 +15,6 @@ function setActiveEntry(data) {
 
 function setActiveJournal(data) {
   return { type: "ACTIVE_JOURNAL", data };
-}
-
-function offlineEntry(data) {
-  return { type: "OFFLINE_ENTRY", data };
 }
 
 function setKey(data) {
@@ -42,11 +34,9 @@ function setMsg(data) {
 }
 
 export {
-  unsavedEntries,
   journalList,
   setActiveJournal,
-  savedEntries,
-  offlineEntry,
+  setEntriesList,
   setKey,
   isLogged,
   checkKey,

@@ -3,7 +3,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { connect } from "react-redux";
 
 const mapStateToSnackBar = (state) => {
-  return state;
+  const msg = state.custom.msg;
+  return { msg };
 };
 
 function SnackBarConstruct(props) {

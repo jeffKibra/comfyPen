@@ -1,77 +1,69 @@
-import React, { useState } from "react";
+import React from "react";
 import Spinner from "../component/spinner";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 function EmailForm(props) {
-  const { email, msg, status, validated, validateEmail } = props;
+  const { register, handleSubmit, watch, errors } = useForm({
+    mode: "onBlur | onChange",
+  });
 
-  const [checked, setChecked] = useState(false);
+  const { msg, status, validateMail } = props;
 
-  const onCheckChange = e => {
-    const val = e.target.checked;
-    setChecked(val);
-  };
-
-  const onChange = e => {
-    props.onChange(e);
-  };
-
-  const onSubmit = () => {
-    props.next();
+  const onSubmit = (data, e) => {
+    console.log(data);
+    e.target.reset();
+    validateMail(data);
   };
 
   return (
-    <div>
-      <div className="form-group">
-        <label htmlFor="email">
-          <p className=" my-0 py-0 d-inline text-left">
-            email: <small className="text-warning ">*{msg}</small>
-          </p>
-        </label>
-        <input
-          onChange={onChange}
-          type="email"
-          name="email"
-          value={email}
-          className="form-control"
-          placeholder="email"
-        />
-      </div>
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          onChange={onCheckChange}
-          checked={checked}
-        />
-        <label className="form-check-label">
-          I have read and agree to the{" "}
-          <Link to="/terms" style={{ color: "yellow" }}>
-            terms of use
-          </Link>{" "}
-          and the{" "}
-          <Link style={{ color: "yellow" }} to="/privacy">
-            {" "}
-            privacy policy
-          </Link>
-        </label>
-      </div>
-
-      {validated === true && (
-        <button onClick={onSubmit} className="btn btn-outline-warning my-3">
-          Continue
-        </button>
-      )}
-      {validated === false && (
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="form-group">
+          <label htmlFor="email">
+            <p className=" my-0 py-0 d-inline text-left">
+              Email:{" "}
+              <small className="text-danger ">*{errors?.email?.message}</small>
+            </p>
+          </label>
+          <input
+            ref={register({
+              required: { value: true, message: "please provide an email" },
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                message: "invalid email address",
+              },
+            })}
+            type="email"
+            name="email"
+            className="form-control"
+            placeholder="email"
+          />
+        </div>
+        <div className="form-check">
+          <input
+            ref={register({
+              required: { value: true },
+            })}
+            className="form-check-input"
+            type="checkbox"
+            name="read"
+          />
+          <label className="form-check-label">
+            I have read and agree to the <Link to="/terms">terms of use</Link>{" "}
+            and the <Link to="/privacy"> privacy policy</Link>
+          </label>
+        </div>
         <button
-          disabled={!checked}
-          onClick={validateEmail}
-          className="btn btn-outline-warning my-3"
+          type="submit"
+          disabled={!watch("read")}
+          className="btn btn-outline-info my-3"
         >
-          Check <Spinner status={status} />
+          Check {"  "} <Spinner status={status} />
         </button>
-      )}
-    </div>
+        <p className="text-danger">{msg}</p>
+      </form>
+    </>
   );
 }
 

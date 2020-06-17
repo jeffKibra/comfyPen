@@ -4,59 +4,53 @@ import EditableContainer from "./editableContainer";
 import CreateNewJournal from "./createJournal";
 import PinLogin from "../security/pinLogin";
 
-const mapStateToJournalComponent = (state) => {
-  return state;
+const mapStateToProps = (state) => {
+  const { auth } = state.firebase;
+  const { ordered } = state.firestore;
+  return { ordered, auth };
 };
 
-function JournalComponentConstruct(props) {
-  const { status, refreshJournal } = props;
-  const myJournals = props.journals.map((journal, index) => (
-    <EditableContainer
-      refreshJournal={refreshJournal}
-      key={index}
-      journal={journal}
-    />
-  ));
+function JournalComponent(props) {
+  const { status } = props;
+  const journals = props.ordered.journals;
+  const myJournals = journals
+    ? props.ordered.journals.map((journal, index) => (
+        <EditableContainer key={index} journal={journal} />
+      ))
+    : [];
 
   if (props.storageKey) {
     if (!!props.securityKey) {
-      return (
-        <Main
-          refreshJournal={refreshJournal}
-          myJournals={myJournals}
-          status={status}
-        />
-      );
+      return <Main myJournals={myJournals} status={status} />;
     } else {
       return <PinLogin />;
     }
   } else {
-    return (
-      <Main
-        refreshJournal={refreshJournal}
-        myJournals={myJournals}
-        status={status}
-      />
-    );
+    return <Main myJournals={myJournals} status={status} />;
   }
 }
 
 function Main(props) {
-  const { myJournals, refreshJournal, status } = props;
+  const { myJournals } = props;
 
   return (
     <div>
       <div className="row">{myJournals}</div>
       <div className="row">
         {" "}
-        <CreateNewJournal refreshJournal={refreshJournal} />
+        <CreateNewJournal />
       </div>
     </div>
   );
 }
 
-const JournalComponent = connect(mapStateToJournalComponent)(
-  JournalComponentConstruct
-);
+export default connect(mapStateToProps)(JournalComponent);
 
-export default JournalComponent;
+/* firestoreConnect((props) => [
+    {
+      collection: "users",
+      doc: props.firebase.auth?.uid,
+      subcollections: [{ collection: "journals" }],
+      storeAs: "journals",
+    }, // or `todos/${props.todoId}`
+  ]), */

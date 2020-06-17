@@ -8,7 +8,6 @@ import Terms from "./component/terms";
 import Privacy from "./component/privacy";
 import NewEntry from "./journalStrings/newEntry";
 import OnlineReader from "./journalStrings/onlineReader";
-import OfflineReader from "./journalStrings/offlineReader";
 import Read from "./journalStrings/read";
 import Updater from "./journalStrings/updater";
 import PinSignup from "./security/pinSignup";
@@ -17,6 +16,8 @@ import PinDiscard from "./security/pinDiscard";
 import Login from "./account/login";
 import Signup from "./account/signup";
 import Logout from "./account/logout";
+import MainNav from "./navs/mainNav";
+import Protected from "./protected";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -43,6 +44,10 @@ import {
   faBars,
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
+
+import "bootstrap/dist/js/bootstrap.bundle";
+import "./css/prism.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import "./App.css";
 
@@ -84,30 +89,53 @@ const theme = createMuiTheme({
 
 function App() {
   return (
-    <Router>
-      <main style={{ marginBottom: 100 }}>
-        <ThemeProvider theme={theme}>
-          <Switch>
-            <Route exact path="/" component={JournalContainer} />
-            <Route path="/account" component={Account} />
-            <Route path="/onlineList" component={OnlineReader} />
-            <Route path="/offlineList" component={OfflineReader} />
-            <Route path="/read" component={Read} />
-            <Route path="/write" component={NewEntry} />
-            <Route path="/edit" component={Updater} />
-            <Route path="/security" component={Security} />
-            <Route path="/terms" component={Terms} />
-            <Route path="/privacy" component={Privacy} />
-            <Route path="/setPin" component={PinSignup} />
-            <Route path="/changePin" component={PinChange} />
-            <Route path="/discardPin" component={PinDiscard} />
-            <Route path="/login" component={Login} />
-            <Route path="/signup" component={Signup} />
-            <Route path="/logout" component={Logout} />
-          </Switch>
-        </ThemeProvider>
-      </main>
-    </Router>
+    <>
+      <Router>
+        <nav>
+          <MainNav />
+        </nav>
+
+        <main style={{ marginBottom: 100 }} className="container unfixed">
+          <ThemeProvider theme={theme}>
+            <Switch>
+              <Route path="/account" component={Account} />
+              <Route path="/terms" component={Terms} />
+              <Route path="/privacy" component={Privacy} />
+              <Route path="/login" component={Login} />
+              <Route path="/signup" component={Signup} />
+              <Route path="/logout" component={Logout} />
+              <Protected path="/onlineList/:journalId">
+                <OnlineReader />
+              </Protected>
+              <Protected path="/read/:entryId">
+                <Read />
+              </Protected>
+              <Protected path="/write/:journalId">
+                <NewEntry />
+              </Protected>
+              <Protected path="/edit/:entryId">
+                <Updater />
+              </Protected>
+              <Protected path="/setPin">
+                <PinSignup />
+              </Protected>
+              <Protected path="/changePin">
+                <PinChange />
+              </Protected>
+              <Protected path="/discardPin">
+                <PinDiscard />
+              </Protected>
+              <Protected path="/security">
+                <Security />
+              </Protected>
+              <Protected exact path="/">
+                <JournalContainer />
+              </Protected>
+            </Switch>
+          </ThemeProvider>
+        </main>
+      </Router>
+    </>
   );
 }
 

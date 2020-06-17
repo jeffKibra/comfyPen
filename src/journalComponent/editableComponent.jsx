@@ -20,7 +20,7 @@ function EditableComponent(props) {
     return (
       <div className="card col-sm-9 col-md-7 col-lg-6 mx-auto bg-info">
         <div className="card-body">
-          <UpdateJournal journal={journal} refreshJournal={props.refreshJournal} onFormClose={onFormClose} />
+          <UpdateJournal journal={journal} onFormClose={onFormClose} />
         </div>
       </div>
     );

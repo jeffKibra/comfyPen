@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import sanitizeHtml from "sanitize-html";
-import Writer from "./writer";
+import Writer from "../journalStrings/writer";
 import { connect } from "react-redux";
 import $ from "jquery";
 import PagesNav from "../navs/pagesNav";

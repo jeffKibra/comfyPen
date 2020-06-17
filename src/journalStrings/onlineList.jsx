@@ -1,10 +1,8 @@
 import React from "react";
-import { setActiveEntry } from "../component/redux";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import * as moment from "moment";
-import db from "../component/dbaccess";
 import {
   Badge,
   Divider,
@@ -40,39 +38,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const mapStateToOnlineList = (state) => {
+const mapStateToProps = (state) => {
   return state;
 };
 
-const mapDispatchToOnlineList = (dispatch) => ({
-  setActiveEntry: (data) => dispatch(setActiveEntry(data)),
-});
-
-function OnlineListConstruct(props) {
+function OnlineList(props) {
   const classes = useStyles();
-  const history = useHistory();
 
-  const { activeJournal } = props;
-  const savedJournal = activeJournal.savedEntries.map((entry, index) => {
-    const setActiveEntry = () => {
-      props.setActiveEntry(entry);
-      db.activeEntry.clear().then(() => {
-        db.activeEntry.add(entry);
-      });
-      history.push("/read");
-    };
-    const { subject, createdAt } = entry;
+  const { entries } = props;
+
+  const savedJournal = entries.map((entry, index) => {
+    const { subject, createdAt, entryId } = entry;
 
     const date = moment(createdAt).format("LL");
     const time = moment(createdAt).format("LTS");
 
     return (
-      <div key={index}>
-        <ListItem
-          className={classes.listItem}
-          onClick={setActiveEntry}
-          alignItems="flex-start"
-        >
+      <Link
+        to={{
+          pathname: "/read/" + entryId,
+          state: { from: props.location },
+        }}
+        key={index}
+        style={{ color: "#000", textDecoration: "none" }}
+      >
+        <ListItem className={classes.listItem} alignItems="flex-start">
           <ListItemAvatar>
             <Avatar>{subject.charAt(0)}</Avatar>
           </ListItemAvatar>
@@ -93,7 +83,7 @@ function OnlineListConstruct(props) {
           />
         </ListItem>
         <Divider variant="inset" component="li" />
-      </div>
+      </Link>
     );
   });
 
@@ -101,10 +91,7 @@ function OnlineListConstruct(props) {
     <div className="container">
       <List className={classes.root}>
         <ListSubheader>
-          <Badge
-            badgeContent={activeJournal.savedEntries.length}
-            color="primary"
-          >
+          <Badge badgeContent={entries.length} color="primary">
             <h6>My Notes</h6>
           </Badge>
         </ListSubheader>
@@ -115,9 +102,4 @@ function OnlineListConstruct(props) {
   );
 }
 
-const OnlineList = connect(
-  mapStateToOnlineList,
-  mapDispatchToOnlineList
-)(OnlineListConstruct);
-
-export default OnlineList;
+export default withRouter(connect(mapStateToProps)(OnlineList));

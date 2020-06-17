@@ -4,7 +4,7 @@ import Spinner from "../component/spinner";
 
 function LoginForm(props) {
   const { register, handleSubmit, errors } = useForm({
-    mode: "onChange"
+    mode: "onChange",
   });
 
   const onFormSubmit = (data, e) => {
@@ -21,8 +21,9 @@ function LoginForm(props) {
       <form onSubmit={handleSubmit(onFormSubmit)}>
         <div className="form-group">
           <label htmlFor="email">
-            <p className=" my-0 py-0 d-inline text-left text-warning ">
-              Email: *{errors?.email?.message}
+            <p className="my-0 py-0 d-inline text-left">
+              Email:{"  "}
+              <span className="text-danger"> *{errors?.email?.message}</span>
             </p>
           </label>
           <input
@@ -31,12 +32,12 @@ function LoginForm(props) {
             ref={register({
               required: {
                 value: true,
-                message: "Please provide an Email!"
+                message: "Please provide an Email!",
               },
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                message: "Invalid Email Address"
-              }
+                message: "Invalid Email Address",
+              },
             })}
             className="form-control"
             placeholder="email"
@@ -45,9 +46,12 @@ function LoginForm(props) {
 
         <div className="form-group">
           <label htmlFor="password">
-            <p className="my-0 py-0 d-inline text-left text-warning ">
-              {" "}
-              Password: *{errors?.password?.message}
+            <p className="my-0 py-0 d-inline text-left">
+              Password:{" "}
+              <span className=" text-danger ">
+                {" "}
+                *{errors?.password?.message}
+              </span>
             </p>
           </label>
           <input
@@ -56,22 +60,26 @@ function LoginForm(props) {
             ref={register({
               required: {
                 value: true,
-                message: "Please provide a password!"
+                message: "Please provide a password!",
               },
               minLength: {
                 value: 8,
-                message: "Password must be atleast 8 characters long!"
-              }
+                message: "Password must be atleast 8 characters long!",
+              },
             })}
             className="form-control"
             placeholder="password"
           />
         </div>
 
-        <button className="btn btn-outline-warning my-2">
-          LOGIN
-          <Spinner status={status} />
-        </button>
+        <span className="d-inline">
+          <button className="btn btn-outline-info my-2">
+            LOGIN {"  "}
+            <Spinner status={status} />
+          </button>
+          {"  "}
+          <span className="text-danger">{props.msg}</span>
+        </span>
       </form>
     </>
   );

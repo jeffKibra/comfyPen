@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import $ from "jquery";
 import db from "../component/dbaccess";
 import PagesNav from "../navs/pagesNav";
-import ReadFinal from "./readFinal";
+import ReadFinal from "../journalStrings/readFinal";
 import { unsavedEntries, setMsg, setActiveEntry } from "../component/redux";
 import { withRouter } from "react-router-dom";
 

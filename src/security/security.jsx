@@ -1,17 +1,15 @@
 import React, { Component } from "react";
-import PagesNav from "../navs/pagesNav";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import db from "../component/dbaccess";
-import { isLogged, checkKey } from "../component/redux";
+import { checkKey } from "../component/redux";
 
 const mapStateToSecurity = (state) => {
   return state;
 };
 
 const mapDispatchToSecurity = (dispatch) => ({
-  isLogged: (data) => dispatch(isLogged(data)),
   checkKey: (data) => dispatch(checkKey(data)),
 });
 
@@ -26,32 +24,25 @@ class SecurityConstruct extends Component {
       },
       {
         name: "change pin",
-        description: "Create a pin to safeguard your entries",
+        description: "change your pin",
         path: "/changePin",
       },
       {
         name: "discard pin",
-        description: "Create a pin to safeguard your entries",
+        description:
+          "Discard your pin! Please note that your journals will be viewed by anybody",
         path: "/discardPin",
+      },
+      {
+        name: "Forgot pin",
+        description:
+          "Forgot your pin! Please note that you will have to login again!",
+        path: "/logout",
       },
     ],
   };
 
   componentDidMount() {
-    if (this.props.logged) {
-      this.setState({ disabled: false });
-    } else {
-      db.user.count().then((val) => {
-        if (val === 0) {
-          this.props.isLogged({ logged: false });
-          this.setState({ disabled: true });
-        } else {
-          this.props.isLogged({ logged: true });
-          this.setState({ disabled: false });
-        }
-      });
-    }
-
     db.pin.count().then((val) => {
       if (val === 0) {
         this.props.checkKey({ storageKey: false });
@@ -62,23 +53,19 @@ class SecurityConstruct extends Component {
   }
 
   render() {
-    const { storageKey } = this.props;
+    const { storageKey } = this.props.custom;
+    console.log(this.props);
+    const isSet = this.state.pins.filter((card) => card.name !== "set pin");
+    const notSet = this.state.pins.filter((card) => card.name === "set pin");
 
-    const myCard = this.state.pins.filter((card) => {
-      if (storageKey) {
-        if (card.name !== "set pin") return card;
-      } else {
-        if (card.name === "set pin") return card;
-      }
+    const isSetCards = isSet.map((pin, index) => {
+      return <Cards key={index} disabled={this.state.disabled} card={pin} />;
     });
-    const myCards = myCard.map((pin, index) => {
+    const notSetCards = notSet.map((pin, index) => {
       return <Cards key={index} disabled={this.state.disabled} card={pin} />;
     });
     return (
       <>
-        <nav>
-          <PagesNav></PagesNav>
-        </nav>
         <div className="container unfixed">
           <div className="row mx-auto  text-center">
             <div
@@ -87,19 +74,22 @@ class SecurityConstruct extends Component {
             >
               <FontAwesomeIcon icon="user-shield" />
             </div>
-            <div className="col-12 mx-auto my-1 text-center">
-              <span>
-                {this.props.isLogged === true ? (
-                  <p>set a pin to continue</p>
-                ) : (
-                  <p>You must be logged in to set a pin</p>
-                )}
-              </span>
-            </div>
           </div>
           <div className="row">
             <div className="card col-sm-10 mx-auto my-2 text-center bg-info">
-              <div className="card-body">{myCards}</div>
+              <div className="card-body">
+                {storageKey ? (
+                  <div className="text-center mx-auto">
+                    <h6>Your journals are safeguarded with a pin!</h6>
+                    {isSetCards}
+                  </div>
+                ) : (
+                  <div className="text-center mx-auto">
+                    <h6>Set a pin to safeguard your journals!</h6>
+                    {notSetCards}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -3,6 +3,11 @@ import sanitizeHtml from "sanitize-html";
 import Diary from "./write";
 import { validateFormInput } from "../component/validator";
 import ReadBtn from "./readBtn";
+import { encrypt } from "../component/enctype";
+import { connect } from "react-redux";
+
+const mapStateToProps = (state) => state;
+
 class Writer extends Component {
   state = {
     status: this.props.status,
@@ -15,7 +20,9 @@ class Writer extends Component {
   };
 
   static getDerivedStateFromProps(props) {
-    return { status: props.status };
+    return {
+      status: props.status,
+    };
   }
 
   onSubjectChange = (e) => {
@@ -38,15 +45,24 @@ class Writer extends Component {
     this.setState({ error, values });
   };
 
-  onSubmit = () => {
+  onSubmit = async () => {
     const subjectError = validateFormInput(
       "subject",
       this.state.values.subject
     );
+    let entry;
+    /*if (this.props.activeJournal.journalId === "Notes") {
+      entry = sanitizeHtml(this.state.values.entry);
+    } else {
+      entry = await encrypt(sanitizeHtml(this.state.values.entry));
+    }*/
+    entry = sanitizeHtml(this.state.values.entry);
+
+    //entry = await encrypt(sanitizeHtml(this.state.values.entry));
 
     const myValues = {
       subject: sanitizeHtml(this.state.values.subject),
-      entry: sanitizeHtml(this.state.values.entry),
+      entry: entry,
     };
     const entryError = validateFormInput("entry", this.state.values.entry);
     if (subjectError === "" && entryError === "") {
@@ -85,4 +101,4 @@ class Writer extends Component {
   }
 }
 
-export default Writer;
+export default connect(mapStateToProps)(Writer);

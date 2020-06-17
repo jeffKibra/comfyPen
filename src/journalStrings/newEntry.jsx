@@ -1,119 +1,55 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import sanitizeHtml from "sanitize-html";
 import { uuid } from "uuidv4";
 import Writer from "./writer";
-import db from "../component/dbaccess";
-import Fetcher from "../component/server";
-import Sync from "../component/sync";
 import SnackBar from "../component/snackBar";
+import { withRouter } from "react-router-dom";
+import { addEntry } from "./firestoreRedux";
 import $ from "jquery";
-import PagesNav from "../navs/pagesNav";
-import { Link, withRouter } from "react-router-dom";
-import { setMsg, setActiveJournal } from "../component/redux";
+import { setMsg } from "../component/redux";
 
-const mapStateToWriter = (state) => {
-  return state;
+const mapStateToProps = (state, ownProps) => {
+  const { journalId } = ownProps.match.params;
+  const { journals } = state.firestore.data;
+  const journal = journals ? journals[journalId] : {};
+  return { journal };
 };
 
-const mapDispatchToWriter = (dispatch) => ({
+const mapDispatchToProps = (dispatch) => ({
+  addEntry: (data) => dispatch(addEntry(data)),
   setMsg: (msg) => dispatch(setMsg(msg)),
-  setActiveJournal: (data) => dispatch(setActiveJournal(data)),
 });
 
-class WriterConstruct extends Component {
-  state = {
-    status: false,
-    msg: "",
-  };
+function NewEntryConstruct(props) {
+  const { journal, setMsg } = props;
 
-  componentDidMount() {
-    const journalIdState = !!this.props.activeJournal.journalId;
-    if (!journalIdState) {
-      db.activeJournal.toArray().then((val) => {
-        if (val.length === 0) return this.props.history.push("/");
-        this.props.setActiveJournal(val[0]);
-      });
-    }
-  }
-
-  onNewEntry = (data) => {
-    this.setState({ status: true });
+  const onNewEntry = (data) => {
     let entryId = uuid();
     const entryData = {
       ...data,
       subject: sanitizeHtml(data.subject),
       entry: sanitizeHtml(data.entry),
-      journalId: this.props.activeJournal.journalId,
+      journalId: journal.journalId,
       entryId,
       createdAt: new Date().toISOString(),
-      submit: "newEntry",
     };
-
-    Fetcher(entryData, "POST")
-      .then((res) => {
-        //console.log(res);
-        if (res.value === false) {
-          throw new Error("false values");
-        } else {
-          this.setState({ status: false });
-          this.props.setMsg({ msg: "data saved" });
-          $("#snackBarTrigger").trigger("click");
-          $("#fetchEntriesList").trigger("click");
-        }
-      })
-      .catch((err) => {
-        this.setState({ status: false });
-        this.props.setMsg({ msg: "data saved offline" });
-        $("#snackBarTrigger").trigger("click");
-        db.unsavedEntries.add(entryData).then(() => {
-          $("#fetchEntriesList").trigger("click");
-        });
-        Sync(entryData);
-        //console.log(err);
-      });
+    props.addEntry(entryData);
+    setMsg({ msg: "Saved!" });
+    $("#snackBarTrigger").trigger("click");
   };
 
-  render() {
-    const { status } = this.state;
-    return (
-      <>
-        <nav>
-          <PagesNav>
-            <Link to="/onlineList">cancel</Link>
-          </PagesNav>
-        </nav>
-        <div className="unfixed">
-          {!!this.props.activeJournal.journalId === true ? (
-            <Writer
-              subject=""
-              entry=""
-              newEntry={this.onNewEntry}
-              status={status}
-            />
-          ) : (
-            <div className="container">
-              <div className="card col-sm-6 col-md-4 mx-auto my-3 bg-info">
-                <div className="card-body">
-                  <p className="card-text">
-                    Please head over to the home page to select a journal to
-                    view
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <SnackBar />
-      </>
-    );
-  }
+  return (
+    <>
+      <Writer subject="" entry="" newEntry={onNewEntry} />
+      <SnackBar />
+    </>
+  );
 }
 
 const NewEntry = connect(
-  mapStateToWriter,
-  mapDispatchToWriter
-)(WriterConstruct);
+  mapStateToProps,
+  mapDispatchToProps
+)(NewEntryConstruct);
 
 export default withRouter(NewEntry);

@@ -4,7 +4,7 @@ import Spinner from "../component/spinner";
 
 function JournalForm(props) {
   const { register, handleSubmit, errors } = useForm({
-    mode: "onChange"
+    mode: "onChange",
   });
 
   const onFormSubmit = (data, e) => {
@@ -17,9 +17,9 @@ function JournalForm(props) {
     loginsuccess,
     loginerror,
     btnText,
-    journalname,
-    journaldescription,
-    onFormClose
+    journalName,
+    journalDescription,
+    onFormClose,
   } = props;
 
   return (
@@ -37,17 +37,17 @@ function JournalForm(props) {
             ref={register({
               required: {
                 value: true,
-                message: "please provide a journal name"
+                message: "please provide a journal name",
               },
               pattern: {
                 value: /^[a-z0-9_., ]+$/i,
-                message: "only numbers and characters allowed"
+                message: "only numbers and characters allowed",
               },
-              maxLength: { value: 20, message: "limited to 20 characters" }
+              maxLength: { value: 20, message: "limited to 20 characters" },
             })}
             className="form-control"
             placeholder="journalName"
-            defaultValue={journalname}
+            defaultValue={journalName}
           />
         </div>
 
@@ -64,17 +64,17 @@ function JournalForm(props) {
             ref={register({
               required: {
                 value: true,
-                message: "please provide a journal description"
+                message: "please provide a journal description",
               },
               pattern: {
                 value: /^[a-z0-9_., ]+$/i,
-                message: "only numbers and characters allowed"
+                message: "only numbers and characters allowed",
               },
-              maxLength: { value: 50, message: "limited to 50 characters" }
+              maxLength: { value: 50, message: "limited to 50 characters" },
             })}
             className="form-control"
             placeholder="journalDescription"
-            defaultValue={journaldescription}
+            defaultValue={journalDescription}
           />
         </div>
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import OfflineList from "./offlineList";
 import { connect } from "react-redux";
-import WriteBtn from "./writeBtn";
+import WriteBtn from "../journalStrings/writeBtn";
 import PagesNav from "../navs/pagesNav";
 import { Link } from "react-router-dom";
 import $ from "jquery";

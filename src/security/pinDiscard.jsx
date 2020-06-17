@@ -1,8 +1,10 @@
 import React from "react";
 import db from "../component/dbaccess";
-import PagesNav from "../navs/pagesNav";
 import { connect } from "react-redux";
-import { checkKey } from "../component/redux";
+import { checkKey, setMsg } from "../component/redux";
+import { useHistory } from "react-router-dom";
+import PinForm from "./pinForm";
+import $ from "jquery";
 
 const mapStateToPinDiscard = (state) => {
   return state;
@@ -10,40 +12,34 @@ const mapStateToPinDiscard = (state) => {
 
 const mapDispatchToPinDiscard = (dispatch) => ({
   checkKey: (data) => dispatch(checkKey(data)),
+  setMsg: (msg) => dispatch(setMsg(msg)),
 });
 
 function PinDiscardConstruct(props) {
-  const discard = () => {
-    db.pin.clear().then(() => {
-      props.checkKey({ storageKey: false });
-    });
+  const history = useHistory();
+  const discard = (data) => {
+    db.pin
+      .where("pin")
+      .equals(data.pin)
+      .count()
+      .then((val) => {
+        if (val === 0) throw new Error("invalid pin");
+        return db.pin.clear();
+      })
+      .then(() => {
+        props.checkKey({ storageKey: false });
+        history.push("/security");
+      })
+      .catch((err) => {
+        props.setMsg({ msg: "Invalid pin!" });
+        $("#snackBarTrigger").trigger("click");
+        console.log(err.message);
+      });
   };
 
   return (
     <>
-      <nav>
-        <PagesNav></PagesNav>
-      </nav>
-      <div className="container unfixed">
-        <div className="card col col-sm-6 col-md-4 col-lg-3 bg-info mx-auto my-3">
-          <div className="card-body mx-auto">
-            {props.storageKey === true && (
-              <>
-                <p>Are you sure you want to discard your pin?</p>
-                <button className="btn btn-outline-warning" onClick={discard}>
-                  Discard
-                </button>
-              </>
-            )}
-            {props.storageKey === false && (
-              <p>
-                Pin discarded. To set another pin, please head over to menu >
-                security.
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
+      <PinForm next={discard} />
     </>
   );
 }

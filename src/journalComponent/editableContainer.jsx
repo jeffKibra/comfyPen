@@ -6,11 +6,11 @@ import $ from "jquery";
 import { connect } from "react-redux";
 import { setMsg } from "../component/redux";
 
-const mapDispatchToEditabelContainer = (dispatch) => ({
+const mapDispatchToProps = (dispatch) => ({
   setMsg: (msg) => dispatch(setMsg(msg)),
 });
 
-class EditableContainerConstruct extends Component {
+class EditableContainer extends Component {
   state = {
     editFormOpen: false,
     status: false,
@@ -61,9 +61,4 @@ class EditableContainerConstruct extends Component {
   }
 }
 
-const EditableContainer = connect(
-  null,
-  mapDispatchToEditabelContainer
-)(EditableContainerConstruct);
-
-export default EditableContainer;
+export default connect(null, mapDispatchToProps)(EditableContainer);

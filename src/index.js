@@ -1,19 +1,45 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
+import { ReactReduxFirebaseProvider, isLoaded } from "react-redux-firebase";
+import { createFirestoreInstance } from "redux-firestore";
 import store from "./component/reduxstore";
-import "./index.css";
+import firebase from "./component/fire";
 import App from "./App";
-import "antd/dist/antd.css";
+import MainBackdrop from "./component/backdrop";
 //import App from "./component/myNav";
 import * as serviceWorker from "./serviceWorker";
+import "./index.css";
+
+const rrfConfig = {
+  userProfile: "users",
+  useFirestoreForProfile: true, // Firestore for Profile instead of Realtime DB
+  // enableClaims: true // Get custom claims along with the profile
+};
+
+const rrfProps = {
+  firebase,
+  config: rrfConfig,
+  dispatch: store.dispatch,
+  createFirestoreInstance, // <- needed if using firestore
+};
+
+function AuthIsLoaded({ children }) {
+  const auth = useSelector((state) => state.firebase.auth);
+  if (!isLoaded(auth)) return <MainBackdrop status={!!auth} />;
+  return children;
+}
 
 ReactDOM.render(
   //<React.StrictMode>
   <Provider store={store}>
-    <App />
+    <ReactReduxFirebaseProvider {...rrfProps}>
+      <AuthIsLoaded>
+        <App />
+      </AuthIsLoaded>
+    </ReactReduxFirebaseProvider>
   </Provider>,
-  // </React.StrictMode>,
+  //</React.StrictMode>,
   document.getElementById("root")
 );
 
