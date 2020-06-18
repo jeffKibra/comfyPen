@@ -3,8 +3,9 @@ import sanitizeHtml from "sanitize-html";
 import Writer from "./writer";
 import { connect } from "react-redux";
 import { updateEntry } from "./firestoreRedux";
-import SnackBar from "../component/snackBar";
 import { withRouter } from "react-router-dom";
+import $ from "jquery";
+import { setMsg } from "../component/redux";
 
 const mapStateToProps = (state, ownProps) => {
   const entryId = ownProps.match.params.entryId;
@@ -15,6 +16,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => ({
   updateEntry: (data) => dispatch(updateEntry(data)),
+  setMsg: (msg) => dispatch(setMsg(msg)),
 });
 
 class UpdaterOnline extends Component {
@@ -35,6 +37,9 @@ class UpdaterOnline extends Component {
 
   onUpdate = (data) => {
     this.props.updateEntry(data);
+    this.props.setMsg({ msg: "entry updated" });
+    $("#snackBarTrigger").trigger("click");
+    this.props.history.push("/onlineList/" + data.journalId);
   };
 
   render() {
@@ -43,7 +48,6 @@ class UpdaterOnline extends Component {
     return (
       <>
         <Writer subject={subject} entry={entry} newEntry={this.onEntry} />
-        <SnackBar />
       </>
     );
   }

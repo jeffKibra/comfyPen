@@ -1,6 +1,5 @@
 import React from "react";
 import db from "../component/dbaccess";
-import SnackBar from "../component/snackBar";
 import KeyForm from "./keyForm";
 import { connect } from "react-redux";
 import { checkKey } from "../component/redux";
@@ -43,7 +42,6 @@ function PinSignupConstruct(props) {
           <KeyForm onSubmit={pinSignup} />
         </div>
       </div>
-      <SnackBar msg="pin set" />
     </>
   );
 }

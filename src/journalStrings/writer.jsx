@@ -3,7 +3,7 @@ import sanitizeHtml from "sanitize-html";
 import Diary from "./write";
 import { validateFormInput } from "../component/validator";
 import ReadBtn from "./readBtn";
-import { encrypt } from "../component/enctype";
+//import { encrypt } from "../component/enctype";
 import { connect } from "react-redux";
 
 const mapStateToProps = (state) => state;

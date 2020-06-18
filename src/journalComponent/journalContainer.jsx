@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { journalList, checkKey, isLogged } from "../component/redux";
 import db from "../component/dbaccess";
 import JournalComponent from "./journalComponent";
+import PinLogin from "../security/pinLogin";
 
 const mapStateToProps = (state) => {
   return state;
@@ -29,7 +30,15 @@ class JournalContainer extends Component {
   render() {
     return (
       <>
-        <JournalComponent />
+        {this.props.custom.storageKey ? (
+          this.props.custom.securityKey ? (
+            <JournalComponent />
+          ) : (
+            <PinLogin />
+          )
+        ) : (
+          <JournalComponent />
+        )}
       </>
     );
   }

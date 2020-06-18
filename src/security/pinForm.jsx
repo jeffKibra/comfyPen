@@ -1,6 +1,5 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import SnackBar from "../component/snackBar";
 
 function PinForm(props) {
   const { register, handleSubmit, errors } = useForm({
@@ -50,7 +49,6 @@ function PinForm(props) {
           </form>
         </div>
       </div>
-      <SnackBar />
     </>
   );
 }

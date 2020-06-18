@@ -1,8 +1,9 @@
 import React from "react";
 import db from "../component/dbaccess";
-import { setKey, isLogged, checkKey } from "../component/redux";
+import { setKey, setMsg } from "../component/redux";
 import { connect } from "react-redux";
 import PinForm from "./pinForm";
+import $ from "jquery";
 
 const mapStateToPinLogin = (state) => ({
   securityKey: state.securityKey,
@@ -11,8 +12,7 @@ const mapStateToPinLogin = (state) => ({
 });
 const mapDispatchToPinLogin = (dispatch) => ({
   setKey: (data) => dispatch(setKey(data)),
-  checkKey: (data) => dispatch(checkKey(data)),
-  isLogged: (data) => dispatch(isLogged(data)),
+  setMsg: (msg) => dispatch(setMsg(msg)),
 });
 
 function PinLoginConstruct(props) {
@@ -22,11 +22,15 @@ function PinLoginConstruct(props) {
       .equals(data.pin)
       .count()
       .then((value) => {
-        if (value === 0) {
-          alert("invalid key");
-        } else {
-          props.setKey(data);
-        }
+        if (value === 0) throw new Error("Invalin pin");
+        console.log({ value, data });
+        return props.setKey(data);
+      })
+      .then()
+      .catch((err) => {
+        props.setMsg({ msg: err.message });
+        $("#snackBarTrigger").trigger("click");
+        console.log(err.message);
       });
   };
 

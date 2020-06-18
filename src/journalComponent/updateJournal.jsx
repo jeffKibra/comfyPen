@@ -15,8 +15,6 @@ const mapDispatchToUpdateJournal = (dispatch) => ({
 
 class UpdateJournalConstruct extends Component {
   onJournalUpdate = (formData) => {
-    console.log(formData);
-
     const updateData = {
       ...this.props.journal,
       journalName: formData.journalName,
@@ -29,7 +27,6 @@ class UpdateJournalConstruct extends Component {
   };
 
   render() {
-    console.log(this.props);
     const { journalName, journalDescription } = this.props.journal;
     return (
       <JournalForm

@@ -1,10 +1,10 @@
-import dotenv from "dotenv";
+//import dotenv from "dotenv";
 import AES from "crypto-js/aes";
 import CryptoJS from "crypto-js";
 import db from "../component/dbaccess";
 import SHA256 from "crypto-js/sha256";
 
-dotenv.config();
+//dotenv.config();
 
 async function encrypt(unencryptedEntry) {
   const email = await db.user.toArray().then((val) => {
@@ -15,8 +15,7 @@ async function encrypt(unencryptedEntry) {
   });
   console.log(email);
   console.log(unencryptedEntry);
-  console.log(process.env);
-  const hash = SHA256(process.env.PASSED_OUT + email).toString();
+  const hash = SHA256(email).toString();
   console.log(hash);
   const encrypted = await AES.encrypt(unencryptedEntry, hash).toString();
   console.log(encrypted);
@@ -31,7 +30,7 @@ async function decrypt(encryptedEntry) {
       return email;
     }
   });
-  const hash = SHA256(process.env.PASSED_OUT + email).toString();
+  const hash = SHA256(email).toString();
   const bytes = AES.decrypt(encryptedEntry, hash);
   const decrypted = await bytes.toString(CryptoJS.enc.Utf8);
   console.log(decrypted);

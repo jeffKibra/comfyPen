@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import sanitizeHtml from "sanitize-html";
 import { uuid } from "uuidv4";
 import Writer from "./writer";
-import SnackBar from "../component/snackBar";
 import { withRouter } from "react-router-dom";
 import { addEntry } from "./firestoreRedux";
 import $ from "jquery";
@@ -42,7 +41,6 @@ function NewEntryConstruct(props) {
   return (
     <>
       <Writer subject="" entry="" newEntry={onNewEntry} />
-      <SnackBar />
     </>
   );
 }

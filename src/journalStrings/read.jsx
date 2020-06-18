@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import ReadFinal from "./readFinal";
 import { withRouter } from "react-router-dom";
 import { deleteEntry } from "./firestoreRedux";
-import SnackBar from "../component/snackBar";
 import { setMsg } from "../component/redux";
 import $ from "jquery";
 
@@ -59,7 +58,6 @@ class ReadOnline extends Component {
           onTrashClick={this.onDelete}
           entry={this.props.entry}
         />
-        <SnackBar />
       </div>
     );
   }

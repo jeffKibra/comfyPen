@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import Fetcher from "../component/server";
 import EditableComponent from "./editableComponent";
-import SnackBar from "../component/snackBar";
 import $ from "jquery";
 import { connect } from "react-redux";
 import { setMsg } from "../component/redux";
@@ -55,7 +54,6 @@ class EditableContainer extends Component {
           editFormOpen={this.state.editFormOpen}
           journal={this.props.journal}
         />
-        <SnackBar />
       </>
     );
   }

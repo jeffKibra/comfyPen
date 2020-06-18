@@ -17,7 +17,8 @@ import Login from "./account/login";
 import Signup from "./account/signup";
 import Logout from "./account/logout";
 import MainNav from "./navs/mainNav";
-import Protected from "./protected";
+import Protected from "./component/protected";
+import SnackBar from "./component/snackBar";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -44,10 +45,6 @@ import {
   faBars,
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
-
-import "bootstrap/dist/js/bootstrap.bundle";
-import "./css/prism.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 import "./App.css";
 
@@ -134,6 +131,7 @@ function App() {
             </Switch>
           </ThemeProvider>
         </main>
+        <SnackBar />
       </Router>
     </>
   );

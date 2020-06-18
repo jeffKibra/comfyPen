@@ -1,6 +1,5 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import SnackBar from "../component/snackBar";
 
 const KeyForm = (props) => {
   const onFormSubmit = (data, e) => {
@@ -69,7 +68,6 @@ const KeyForm = (props) => {
           create
         </button>
       </form>
-      <SnackBar />
     </>
   );
 };
