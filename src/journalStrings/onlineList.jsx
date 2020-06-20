@@ -45,7 +45,7 @@ const mapStateToProps = (state) => {
 function OnlineList(props) {
   const classes = useStyles();
 
-  const { entries } = props;
+  const { entries, journal } = props;
 
   const savedJournal = entries.map((entry, index) => {
     const { subject, createdAt, entryId } = entry;
@@ -92,7 +92,7 @@ function OnlineList(props) {
       <List className={classes.root}>
         <ListSubheader>
           <Badge badgeContent={entries.length} color="primary">
-            <h6>My Notes</h6>
+            <h6>{journal.journalName ? journal.journalName : "My Notes"}</h6>
           </Badge>
         </ListSubheader>
         <Divider component="li" />

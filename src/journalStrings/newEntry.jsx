@@ -9,10 +9,11 @@ import $ from "jquery";
 import { setMsg } from "../component/redux";
 
 const mapStateToProps = (state, ownProps) => {
+  const userId = state.firebase.auth.uid;
   const { journalId } = ownProps.match.params;
   const { journals } = state.firestore.data;
   const journal = journals ? journals[journalId] : {};
-  return { journal };
+  return { journal, userId };
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -21,14 +22,16 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 function NewEntryConstruct(props) {
-  const { journal, setMsg } = props;
+  const { journal, setMsg, userId } = props;
 
   const onNewEntry = (data) => {
+    const { entry, customEntry } = data.entry;
     let entryId = uuid();
     const entryData = {
-      ...data,
+      userId,
+      customEntry,
       subject: sanitizeHtml(data.subject),
-      entry: sanitizeHtml(data.entry),
+      entry,
       journalId: journal.journalId,
       entryId,
       createdAt: new Date().toISOString(),
@@ -40,7 +43,7 @@ function NewEntryConstruct(props) {
 
   return (
     <>
-      <Writer subject="" entry="" newEntry={onNewEntry} />
+      <Writer journal={journal} subject="" entry="" newEntry={onNewEntry} />
     </>
   );
 }

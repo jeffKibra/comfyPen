@@ -1,17 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import ReadFinal from "./readFinal";
-import { withRouter } from "react-router-dom";
 import { deleteEntry } from "./firestoreRedux";
 import { setMsg } from "../component/redux";
 import $ from "jquery";
-
-const mapStateToProps = (state, ownProps) => {
-  const entryId = ownProps.match.params.entryId;
-  const { entries } = state.firestore.data;
-  const entry = entries ? entries[entryId] : {};
-  return { entry };
-};
+import Decrypter from "./decrypter";
 
 const mapDispatchToProps = (dispatch) => ({
   deleteEntry: (data) => dispatch(deleteEntry(data)),
@@ -23,20 +16,11 @@ class ReadOnline extends Component {
     anchorEl: null,
   };
 
-  componentDidMount() {
-    if (!this.props.entry.entryId) {
-      return this.props.history.goBack();
-    }
-  }
-
   onDelete = () => {
     this.props.deleteEntry(this.props.entry);
     this.props.setMsg({ msg: "Deleted!" });
     $("#snackBarTrigger").trigger("click");
-    setTimeout(() => {
-      this.props.history.goBack();
-      console.log("blasted");
-    }, 2000);
+    this.props.history.goBack();
   };
 
   handleMenu = (event) => {
@@ -63,6 +47,4 @@ class ReadOnline extends Component {
   }
 }
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(ReadOnline)
-);
+export default Decrypter(connect(null, mapDispatchToProps)(ReadOnline));

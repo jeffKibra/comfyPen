@@ -26,9 +26,12 @@ const mapStateToProps = (state, ownProps) => {
   const path = ownProps.location.pathname
     .split("/")
     .filter((val) => val !== "");
+  const loading = state.custom.loading;
   const journalId = path[0] === "onlineList" ? path[1] : "";
-  const { auth } = state.firebase;
-  return { auth, journalId };
+  const journals = state.firestore.data.journals;
+  const journal = journals ? journals[journalId] : {};
+  const { auth, profile } = state.firebase;
+  return { auth, profile, journalId, journal, loading };
 };
 
 function MainNavConstruct(props) {
@@ -60,6 +63,7 @@ function MainNavConstruct(props) {
   return (
     <>
       <NavBody
+        journal={props.journal}
         open={open}
         anchorEl={anchorEl}
         handleClose={handleClose}
@@ -67,6 +71,8 @@ function MainNavConstruct(props) {
         classes={classes}
         toggleDrawer={toggleDrawer}
         popMenu={popMenu}
+        loading={props.loading}
+        profile={props.profile}
       ></NavBody>
       <SwipeableDrawer
         anchor="left"
@@ -74,7 +80,12 @@ function MainNavConstruct(props) {
         onClose={toggleDrawer("left", false)}
         onOpen={toggleDrawer("left", true)}
       >
-        <MyDrawer classes={classes} toggleDrawer={toggleDrawer} anchor="left" />
+        <MyDrawer
+          profile={props.profile}
+          classes={classes}
+          toggleDrawer={toggleDrawer}
+          anchor="left"
+        />
       </SwipeableDrawer>
     </>
   );

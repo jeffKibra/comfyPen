@@ -4,6 +4,7 @@ import KeyForm from "./keyForm";
 import { connect } from "react-redux";
 import { checkKey } from "../component/redux";
 import { useHistory } from "react-router-dom";
+import { encryptPin } from "../component/enctype";
 
 const mapStateToPinSignup = (state) => {
   return state;
@@ -15,10 +16,11 @@ const mapDispatchToPinSignup = (dispatch) => ({
 
 function PinSignupConstruct(props) {
   const history = useHistory();
-  const pinSignup = (data) => {
+  const pinSignup = async (data) => {
     console.log(data);
+    const hashedPin = await encryptPin(data.pin);
     const keyData = {
-      pin: data.pin,
+      pin: hashedPin,
     };
     db.pin
       .clear()

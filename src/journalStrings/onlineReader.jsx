@@ -17,11 +17,11 @@ const mapStateToProps = (state, ownProps) => {
 
 function OnlineReaderConstruct(props) {
   const journalId = props.match.params.journalId;
-  const { entries } = props;
+  const { entries, journal } = props;
 
   return (
     <>
-      <OnlineList entries={entries} />
+      <OnlineList journal={journal} entries={entries} />
       <Link
         to={"/write/" + journalId}
         aria-controls="write-Link"

@@ -7,7 +7,6 @@ import store from "./component/reduxstore";
 import firebase from "./component/fire";
 import App from "./App";
 import MainBackdrop from "./component/backdrop";
-//import App from "./component/myNav";
 import * as serviceWorker from "./serviceWorker";
 import "./index.css";
 

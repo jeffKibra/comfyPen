@@ -104,9 +104,7 @@ function App() {
               <Protected path="/onlineList/:journalId">
                 <OnlineReader />
               </Protected>
-              <Protected path="/read/:entryId">
-                <Read />
-              </Protected>
+
               <Protected path="/write/:journalId">
                 <NewEntry />
               </Protected>
@@ -127,6 +125,9 @@ function App() {
               </Protected>
               <Protected exact path="/">
                 <JournalContainer />
+              </Protected>
+              <Protected path="/read/:entryId">
+                <Read />
               </Protected>
             </Switch>
           </ThemeProvider>

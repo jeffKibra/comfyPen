@@ -1,9 +1,12 @@
 import $ from "jquery";
 import { functions } from "../component/fire";
+import { setMsg } from "../component/redux";
+import db from "../component/dbaccess";
 
 function loginAsync(loginData) {
   return (dispatch, getState, { getFirebase }) => {
     dispatch(loading(true));
+    dispatch(setMsg({ msg: "" }));
     const firebase = getFirebase();
     const { email, password } = loginData;
     firebase
@@ -11,13 +14,13 @@ function loginAsync(loginData) {
       .signInWithEmailAndPassword(email, password)
       .then(({ user }) => {
         //setState({ status: false });
-        console.log(user);
+        //console.log(user);
         dispatch(finish("login successful!"));
         $("#snackBarTrigger").trigger("click");
       })
       .catch(function (error) {
         // Handle Errors here.
-        console.log(this);
+
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log({ errorCode, errorMessage });
@@ -32,7 +35,7 @@ function loginAsync(loginData) {
         }
         dispatch(finish(err));
         $("#snackBarTrigger").trigger("click");
-        console.log(err);
+
         // ...
       });
   };
@@ -41,62 +44,95 @@ function loginAsync(loginData) {
 function logoutAsync() {
   return (dispatch, getState, { getFirebase }) => {
     const firebase = getFirebase();
+    db.pin.clear();
     firebase.auth().signOut();
   };
 }
 
 function signupAsync(signupData) {
-  return (dispatch, getState, { getFirebase, getFirestore }) => {
+  return async (dispatch, getState, { getFirebase, getFirestore }) => {
     dispatch(loading(true));
+    dispatch(setMsg({ msg: "" }));
     const firebase = getFirebase();
     const firestore = getFirestore();
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(signupData.email, signupData.password)
-      .then(({ user }) => {
-        const msg = "Account successfully created. Login to proceed!";
-        dispatch(finish(msg));
-        $("#snackBarTrigger").trigger("click");
-        return firestore.collection("users").doc(user.uid).set({
-          firstName: signupData.firstName,
-          lastName: signupData.lastName,
+    let msg;
+    try {
+      const user = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(signupData.email, signupData.password)
+        .then(({ user }) => {
+          //console.log(user);
+          msg = "Account successfully created. Proceed...!";
+          dispatch(setMsg({ msg }));
+          $("#snackBarTrigger").trigger("click");
+          return user;
         });
-      })
-      .catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log({ errorCode, errorMessage });
+      //console.log(user);
 
-        const msg = "Network error! Please try again!";
-        dispatch(finish(msg));
-        $("#snackBarTrigger").trigger("click");
+      await firestore.collection("users").doc(user.uid).set({
+        id: user.uid,
+        firstName: signupData.firstName,
+        lastName: signupData.lastName,
       });
+
+      const db = firestore
+        .collection("users")
+        .doc(user.uid)
+        .collection("journals");
+
+      await db.doc("Notes").set({
+        journalId: "Notes",
+        journalName: "Notes...",
+        journalDescription: "Say goodbye to lost notes!",
+      });
+      await db.doc("Diary").set({
+        journalId: "Diary",
+        journalName: "Diary...",
+        journalDescription:
+          "Your companion everywhere with utmost convenience!",
+      });
+      console.log("journals created!");
+      msg = "account created!";
+      dispatch(finish(msg));
+    } catch (error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log({ errorCode, errorMessage });
+
+      const msg = "Network error! Please try again!";
+      dispatch(finish(msg));
+      $("#snackBarTrigger").trigger("click");
+    }
   };
 }
 
 function checkEmailAsync(emailData) {
   return (dispatch, getState) => {
     dispatch(loading(true));
+    dispatch(setMsg({ msg: "" }));
     const email = emailData.email;
 
     const checkEmail = functions.httpsCallable("checkEmail");
     checkEmail(emailData)
       .then((res) => {
         let msg;
-        if (res.value === true) {
+        if (res.data.value === true) {
           msg = "This email is already registered";
-        } else if (res.value === false) {
-          msg = "Email Available";
-
-          dispatch(next());
         }
-        console.log(res);
+        //console.log(res);
         dispatch(emailChecked(msg, email));
         $("#snackBarTrigger").trigger("click");
       })
       .catch((err) => {
-        const msg = "Please ensure you have an internet connection!";
+        let msg;
+        if (err.code === "not-found") {
+          msg = err.message ? err.message : "Email available";
+          dispatch(next());
+        } else {
+          msg = "Please ensure you have an internet connection!";
+        }
+
         dispatch(emailChecked(msg, email));
         $("#snackBarTrigger").trigger("click");
         console.log({ err });

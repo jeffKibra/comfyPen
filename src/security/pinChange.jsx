@@ -5,6 +5,7 @@ import db from "../component/dbaccess";
 import $ from "jquery";
 import { setMsg } from "../component/redux";
 import { connect } from "react-redux";
+import { encryptPin } from "../component/enctype";
 
 const mapDispatchToProps = (dispatch) => ({
   setMsg: (msg) => dispatch(setMsg(msg)),
@@ -15,11 +16,12 @@ class PinChange extends Component {
     current: 0,
   };
 
-  next = (data) => {
+  next = async (data) => {
     const current = this.state.current + 1;
+    const hashedPin = await encryptPin(data.pin);
     db.pin
       .where("pin")
-      .equals(data.pin)
+      .equals(hashedPin)
       .count()
       .then((val) => {
         if (val === 0) throw new Error("Invalid Pin!");

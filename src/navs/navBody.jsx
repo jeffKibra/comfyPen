@@ -1,5 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
+import Spinner from "../component/spinner";
+
 import {
   Menu as MaterialMenu,
   AppBar,
@@ -20,6 +22,8 @@ export default function NavBody(props) {
     anchorEl,
     open,
     toggleDrawer,
+    loading,
+    profile,
   } = props;
 
   return (
@@ -43,8 +47,13 @@ export default function NavBody(props) {
             </IconButton>{" "}
             <Typography variant="h6" className={classes.title}>
               {" "}
-              ComfyPen{" "}
+              {profile.firstName
+                ? "ComfyPen- " +
+                  profile?.firstName?.charAt(0) +
+                  profile?.lastName?.charAt(0)
+                : "ComfyPen"}{" "}
             </Typography>{" "}
+            <Spinner status={loading} />
             <div>
               {" "}
               <IconButton

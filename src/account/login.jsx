@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import LoginForm from "./loginForm";
 import { connect } from "react-redux";
-import SnackBar from "../component/snackBar";
 import logo from "../diary144.png";
 import { loginAsync } from "./authRedux";
 
@@ -16,8 +15,8 @@ function Login(props) {
   const history = useHistory();
   const handleFormSubmit = (formData) => {
     props.loginAsync(formData);
-    console.log(formData);
   };
+
   useEffect(() => {
     const { uid } = props.firebase.auth;
     if (uid) history.push("/account");
@@ -25,7 +24,6 @@ function Login(props) {
 
   const status = props.custom.loading;
   const msg = props.custom.msg;
-  console.log(props);
   return (
     <>
       <div className="card col-sm-6 col-md-4 mx-auto bg-light ">
@@ -45,7 +43,7 @@ function Login(props) {
           />
 
           <div className="text-center my-2 mx-auto">
-            <Link to="/resetPassword">Forgot password?</Link>{" "}
+            {/*<Link to="/resetPassword">Forgot password?</Link>{" "}*/}
             <p className="my-3">
               Don't have an account? {"  "}
               <Link to="/signup">signup...</Link>
@@ -53,7 +51,6 @@ function Login(props) {
           </div>
         </div>
       </div>
-      <SnackBar />
     </>
   );
 }

@@ -1,13 +1,12 @@
 import $ from "jquery";
-//import { firestore } from "../component/fire";
 
 function addEntry(entryData) {
   return (dispatch, getState, { getFirestore }) => {
-    dispatch(loading());
+    //dispatch(loading());
     const firestore = getFirestore();
     const userId = getState().firebase.auth.uid;
     const { journalId, entryId } = entryData;
-    console.log({ userId, entryId, journalId });
+    //console.log({ userId, entryId, journalId, entryData });
 
     firestore
       .collection("users")
@@ -31,10 +30,10 @@ function addEntry(entryData) {
 
 function deleteEntry(entryData) {
   return (dispatch, getState, { getFirestore }) => {
-    dispatch(loading());
+    // dispatch(loading());
     const { entryId, journalId } = entryData;
     const userId = getState().firebase.auth.uid;
-    console.log({ userId, entryId, journalId });
+    //console.log({ userId, entryId, journalId, entryData });
     const firestore = getFirestore();
     firestore
       .collection("users")
@@ -45,7 +44,7 @@ function deleteEntry(entryData) {
       .doc(entryId)
       .delete()
       .then((val) => {
-        console.log(val);
+        //console.log(val);
         dispatch(finish("deleted!"));
         $("#snackBarTrigger").trigger("click");
       })
@@ -59,10 +58,10 @@ function deleteEntry(entryData) {
 
 function updateEntry(entryData) {
   return (dispatch, getState, { getFirestore }) => {
-    dispatch(loading());
+    //dispatch(loading());
     const { entryId, journalId } = entryData;
     const userId = getState().firebase.auth.uid;
-    console.log({ userId, entryId, journalId });
+    //console.log({ userId, entryId, journalId });
     const firestore = getFirestore();
     firestore
       .collection("users")
@@ -73,7 +72,7 @@ function updateEntry(entryData) {
       .doc(entryId)
       .update(entryData)
       .then((val) => {
-        console.log(val);
+        //console.log(val);
         dispatch(finish("updated!"));
         $("#snackBarTrigger").trigger("click");
       })
@@ -87,7 +86,7 @@ function updateEntry(entryData) {
 
 function updateJournal(journalData) {
   return (dispatch, getState, { getFirestore }) => {
-    dispatch(loading());
+    //dispatch(loading());
     const { journalId } = journalData;
     const userId = getState().firebase.auth.uid;
     console.log({ userId, journalId, journalData });
@@ -99,7 +98,7 @@ function updateJournal(journalData) {
       .doc(journalId)
       .update(journalData)
       .then((val) => {
-        console.log(val);
+        //console.log(val);
         dispatch(finish("updated!"));
         $("#snackBarTrigger").trigger("click");
       })
@@ -113,7 +112,7 @@ function updateJournal(journalData) {
 
 function newJournal(journalData) {
   return (dispatch, getState, { getFirestore }) => {
-    dispatch(loading());
+    //dispatch(loading());
     const { journalId } = journalData;
     const userId = getState().firebase.auth.uid;
     console.log({ userId, journalId, journalData });
@@ -125,7 +124,7 @@ function newJournal(journalData) {
       .doc(journalId)
       .set(journalData)
       .then((val) => {
-        console.log(val);
+        //console.log(val);
         dispatch(finish("updated!"));
         $("#snackBarTrigger").trigger("click");
       })

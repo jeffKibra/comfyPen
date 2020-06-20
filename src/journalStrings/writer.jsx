@@ -3,13 +3,15 @@ import sanitizeHtml from "sanitize-html";
 import Diary from "./write";
 import { validateFormInput } from "../component/validator";
 import ReadBtn from "./readBtn";
-//import { encrypt } from "../component/enctype";
+import { encrypt } from "../component/enctype";
 import { connect } from "react-redux";
+import { uuid } from "uuidv4";
 
 const mapStateToProps = (state) => state;
 
 class Writer extends Component {
   state = {
+    email: "",
     status: this.props.status,
     disabled: true,
     error: {
@@ -18,6 +20,11 @@ class Writer extends Component {
     },
     values: { subject: this.props.subject, entry: this.props.entry },
   };
+
+  componentDidMount() {
+    const email = this.props.firebase.auth.email;
+    this.setState({ email });
+  }
 
   static getDerivedStateFromProps(props) {
     return {
@@ -46,31 +53,33 @@ class Writer extends Component {
   };
 
   onSubmit = async () => {
-    const subjectError = validateFormInput(
-      "subject",
-      this.state.values.subject
-    );
-    let entry;
-    /*if (this.props.activeJournal.journalId === "Notes") {
-      entry = sanitizeHtml(this.state.values.entry);
-    } else {
-      entry = await encrypt(sanitizeHtml(this.state.values.entry));
-    }*/
-    entry = sanitizeHtml(this.state.values.entry);
+    let customEntry = uuid();
+    const email = this.state.email;
+    const { journalId } = this.props.journal;
+    let { entry, subject } = this.state.values;
+    const subjectError = validateFormInput("subject", subject);
 
-    //entry = await encrypt(sanitizeHtml(this.state.values.entry));
+    if (journalId === "Notes") {
+      entry = sanitizeHtml(entry);
+      entry = { entry, customEntry: "" };
+      // customEntry = "";
+    } else {
+      entry = sanitizeHtml(entry);
+      entry = await encrypt(entry, email, customEntry);
+    }
 
     const myValues = {
-      subject: sanitizeHtml(this.state.values.subject),
+      subject: sanitizeHtml(subject),
       entry: entry,
     };
-    const entryError = validateFormInput("entry", this.state.values.entry);
-    if (subjectError === "" && entryError === "") {
-      this.props.newEntry(myValues);
 
+    const entryError = validateFormInput("entry", entry);
+    if (subjectError === "" && entryError === "") {
       const values = { ...this.state.values, subject: "", entry: "" };
       const error = { ...this.state.error, subjectError: "", entryError: "" };
       this.setState({ values, error });
+
+      this.props.newEntry(myValues);
     } else {
       const error = { ...this.state.error, entryError, subjectError };
       this.setState({ error });

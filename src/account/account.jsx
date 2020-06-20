@@ -5,6 +5,7 @@ import { isLogged } from "../component/redux";
 import { connect } from "react-redux";
 
 const mapStateToProps = (state) => {
+  //console.log(state);
   return state;
 };
 
@@ -33,12 +34,10 @@ class Account extends Component {
     ],
   };
 
-  componentDidMount() {
-    //check if logged in
-  }
-
   render() {
-    const { uid, email } = this.props.firebase.auth;
+    const { auth, profile } = this.props.firebase;
+    const { uid, email } = auth;
+    const { firstName, lastName } = profile;
 
     return (
       <>
@@ -53,7 +52,11 @@ class Account extends Component {
             <div className="col-12 mx-auto my-1 text-center">
               <span>
                 {uid ? (
-                  <p>logged in as: {email}</p>
+                  <>
+                    <h5>Account Details:</h5>
+                    <p>logged in as: {firstName + "  " + lastName} </p>
+                    <p>email: {email}</p>
+                  </>
                 ) : (
                   <p>Please login below to continue</p>
                 )}

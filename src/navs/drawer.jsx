@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 
 export default function MyDrawer(props) {
-  const { anchor, classes, toggleDrawer } = props;
+  const { anchor, classes, toggleDrawer, profile } = props;
 
   return (
     <div
@@ -25,7 +25,13 @@ export default function MyDrawer(props) {
     >
       <List>
         <ListItem button>
-          <ListItemText primary="Menu" />
+          <ListItemText
+            primary={
+              profile.firstName
+                ? profile.firstName + "  " + profile.lastName
+                : "Menu"
+            }
+          />
         </ListItem>
         <Divider />
         <Link to="/" style={{ color: "#000" }}>

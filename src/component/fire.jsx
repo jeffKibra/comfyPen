@@ -46,8 +46,13 @@ firebase
     }
   });
 
+const firestore = firebase.firestore();
 const functions = firebase.functions();
-export { functions };
+/*functions.useFunctionsEmulator(
+  "http://localhost:5001/comfy-278412/us-central1/checkEmail"
+);*/
+
+export { functions, firestore };
 
 // Subsequent queries will use persistence, if it was enabled successfully
 

@@ -1,18 +1,10 @@
 import React, { Component } from "react";
-import sanitizeHtml from "sanitize-html";
 import Writer from "./writer";
 import { connect } from "react-redux";
 import { updateEntry } from "./firestoreRedux";
-import { withRouter } from "react-router-dom";
 import $ from "jquery";
 import { setMsg } from "../component/redux";
-
-const mapStateToProps = (state, ownProps) => {
-  const entryId = ownProps.match.params.entryId;
-  const { entries } = state.firestore.data;
-  const entry = entries ? entries[entryId] : {};
-  return { entry };
-};
+import Decrypter from "./decrypter";
 
 const mapDispatchToProps = (dispatch) => ({
   updateEntry: (data) => dispatch(updateEntry(data)),
@@ -20,17 +12,14 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class UpdaterOnline extends Component {
-  componentDidMount() {
-    if (!this.props.entry.entryId) {
-      return this.props.history.goBack();
-    }
-  }
-
   onEntry = (data) => {
+    const { entry, customEntry } = data.entry;
+
     const appData = {
       ...this.props.entry,
-      subject: sanitizeHtml(data.subject),
-      entry: sanitizeHtml(data.entry),
+      subject: data.subject,
+      entry,
+      customEntry,
     };
     this.onUpdate(appData);
   };
@@ -43,16 +32,20 @@ class UpdaterOnline extends Component {
   };
 
   render() {
-    const { subject, entry } = this.props.entry;
+    const { subject, entry, journalId } = this.props.entry;
+    const journal = { journalId };
 
     return (
       <>
-        <Writer subject={subject} entry={entry} newEntry={this.onEntry} />
+        <Writer
+          subject={subject}
+          journal={journal}
+          entry={entry}
+          newEntry={this.onEntry}
+        />
       </>
     );
   }
 }
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(UpdaterOnline)
-);
+export default Decrypter(connect(null, mapDispatchToProps)(UpdaterOnline));

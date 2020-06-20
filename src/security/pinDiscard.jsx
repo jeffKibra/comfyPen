@@ -5,6 +5,7 @@ import { checkKey, setMsg } from "../component/redux";
 import { useHistory } from "react-router-dom";
 import PinForm from "./pinForm";
 import $ from "jquery";
+import { encryptPin } from "../component/enctype";
 
 const mapStateToPinDiscard = (state) => {
   return state;
@@ -17,10 +18,11 @@ const mapDispatchToPinDiscard = (dispatch) => ({
 
 function PinDiscardConstruct(props) {
   const history = useHistory();
-  const discard = (data) => {
+  const discard = async (data) => {
+    const hashedPin = await encryptPin(data.pin);
     db.pin
       .where("pin")
-      .equals(data.pin)
+      .equals(hashedPin)
       .count()
       .then((val) => {
         if (val === 0) throw new Error("invalid pin");

@@ -54,7 +54,7 @@ class SecurityConstruct extends Component {
 
   render() {
     const { storageKey } = this.props.custom;
-    console.log(this.props);
+    //console.log(this.props);
     const isSet = this.state.pins.filter((card) => card.name !== "set pin");
     const notSet = this.state.pins.filter((card) => card.name === "set pin");
 
