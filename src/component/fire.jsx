@@ -9,7 +9,7 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/functions";
 
-var firebaseConfig = {
+/*var firebaseConfig = {
   apiKey: "AIzaSyBrU1Qww3cQ2AjOmhh3KE4QjHBhDqXlVcc",
   authDomain: "comfy-278412.firebaseapp.com",
   databaseURL: "https://comfy-278412.firebaseio.com",
@@ -18,6 +18,16 @@ var firebaseConfig = {
   messagingSenderId: "1052451709336",
   appId: "1:1052451709336:web:aa0946bf2b75598ef48bed",
   measurementId: "G-K30Z63CKT6",
+};*/
+const firebaseConfig = {
+  apiKey: "AIzaSyAHg0P5UCPJQRD4ScEoB1Yw1gS_f4T4xgw",
+  authDomain: "comfy-pen.firebaseapp.com",
+  databaseURL: "https://comfy-pen.firebaseio.com",
+  projectId: "comfy-pen",
+  storageBucket: "comfy-pen.appspot.com",
+  messagingSenderId: "679837636378",
+  appId: "1:679837636378:web:57ced048a1a0a3c508bea3",
+  measurementId: "G-RF7QTHTDX1",
 };
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
@@ -49,7 +59,7 @@ firebase
 const firestore = firebase.firestore();
 const functions = firebase.functions();
 /*functions.useFunctionsEmulator(
-  "http://localhost:5001/comfy-278412/us-central1/checkEmail"
+  "http://localhost:5000/comfy-pen/us-central1/checkEmail"
 );*/
 
 export { functions, firestore };

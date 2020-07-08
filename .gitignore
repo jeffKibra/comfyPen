@@ -11,6 +11,12 @@
 # production
 /build
 
+#env file
+/src/.env
+
+#encryption file
+/src/component/enctype.js
+
 # misc
 .DS_Store
 .env.local
