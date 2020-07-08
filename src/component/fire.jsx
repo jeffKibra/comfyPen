@@ -20,15 +20,16 @@ import "firebase/functions";
   measurementId: "G-K30Z63CKT6",
 };*/
 const firebaseConfig = {
-  apiKey: "AIzaSyAHg0P5UCPJQRD4ScEoB1Yw1gS_f4T4xgw",
-  authDomain: "comfy-pen.firebaseapp.com",
-  databaseURL: "https://comfy-pen.firebaseio.com",
-  projectId: "comfy-pen",
-  storageBucket: "comfy-pen.appspot.com",
-  messagingSenderId: "679837636378",
-  appId: "1:679837636378:web:57ced048a1a0a3c508bea3",
-  measurementId: "G-RF7QTHTDX1",
+  apiKey: process.env.REACT_APP_APIKEY,
+  authDomain: process.env.REACT_APP_AUTHDOMAIN,
+  databaseURL: process.env.REACT_APP_DATABASEURL,
+  projectId: process.env.REACT_APP_PROJECTID,
+  storageBucket: process.env.REACT_APP_STORAGEBUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGINGSENDERID,
+  appId: process.env.REACT_APP_APPID,
+  measurementId: process.env.REACT_APP_MEASUREMENTID,
 };
+
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 //firebase.firestore();
