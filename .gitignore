@@ -12,10 +12,10 @@
 /build
 
 #env file
-/src/.env
+src/.env
 
 #encryption file
-/src/component/enctype.js
+src/component/enctype.js
 
 # misc
 .DS_Store
