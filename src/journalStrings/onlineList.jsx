@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link, withRouter } from "react-router-dom";
 import * as moment from "moment";
+import { compose } from "recompose";
 import {
   Badge,
   Divider,
@@ -102,4 +103,4 @@ function OnlineList(props) {
   );
 }
 
-export default withRouter(connect(mapStateToProps)(OnlineList));
+export default compose(withRouter, connect(mapStateToProps))(OnlineList);

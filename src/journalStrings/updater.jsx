@@ -5,6 +5,7 @@ import { updateEntry } from "./firestoreRedux";
 import $ from "jquery";
 import { setMsg } from "../component/redux";
 import Decrypter from "./decrypter";
+import { compose } from "recompose";
 
 const mapDispatchToProps = (dispatch) => ({
   updateEntry: (data) => dispatch(updateEntry(data)),
@@ -48,4 +49,7 @@ class UpdaterOnline extends Component {
   }
 }
 
-export default Decrypter(connect(null, mapDispatchToProps)(UpdaterOnline));
+export default compose(
+  Decrypter,
+  connect(null, mapDispatchToProps)
+)(UpdaterOnline);

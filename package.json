@@ -1,5 +1,5 @@
 {
-  "name": "appl",
+  "name": "comfyPen",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -39,7 +39,8 @@
     "redux-thunk": "^2.3.0",
     "sanitize-html": "^1.23.0",
     "tinymce": "^5.2.1",
-    "uuidv4": "^6.0.7"
+    "uuidv4": "^6.0.7",
+    "webpack": "^4.42.0"
   },
   "scripts": {
     "start": "react-scripts start",

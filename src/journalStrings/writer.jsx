@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import sanitizeHtml from "sanitize-html";
-import Diary from "./write";
+import TinymceEditor from "./tinymceEditor";
 import { validateFormInput } from "../component/validator";
 import ReadBtn from "./readBtn";
 import { encrypt } from "../component/enctype";
@@ -91,7 +91,7 @@ class Writer extends Component {
     return (
       <>
         <div className="unfixed">
-          <Diary
+          <TinymceEditor
             status={status}
             disabled={disabled}
             entry={values.entry}

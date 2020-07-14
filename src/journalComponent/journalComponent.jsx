@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import EditableContainer from "./editableContainer";
-import CreateNewJournal from "./createJournal";
+import CreateJournal from "./createJournal";
 import PinLogin from "../security/pinLogin";
 
 const mapStateToProps = (state) => {
@@ -38,7 +38,7 @@ function Main(props) {
       <div className="row">{myJournals}</div>
       <div className="row">
         {" "}
-        <CreateNewJournal />
+        <CreateJournal />
       </div>
     </div>
   );

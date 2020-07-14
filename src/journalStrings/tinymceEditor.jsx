@@ -3,7 +3,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import Spinner from "../component/spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function Diary(props) {
+function TinymceEditor(props) {
   const { subjectError, disabled, onSubmit, subject, entry, status } = props;
 
   const onEntryChange = (content) => {
@@ -72,4 +72,4 @@ function Diary(props) {
   );
 }
 
-export default Diary;
+export default TinymceEditor;

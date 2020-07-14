@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import OnlineList from "./onlineList";
 import { withRouter, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { compose } from "recompose";
 
 const mapStateToProps = (state, ownProps) => {
   const journalId = ownProps.match.params.journalId;
@@ -33,6 +34,7 @@ function OnlineReaderConstruct(props) {
   );
 }
 
-const OnlineReader = connect(mapStateToProps)(OnlineReaderConstruct);
-
-export default withRouter(OnlineReader);
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(OnlineReaderConstruct);

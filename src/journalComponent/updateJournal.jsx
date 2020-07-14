@@ -3,17 +3,18 @@ import JournalForm from "./journalForm";
 import { connect } from "react-redux";
 import { setMsg } from "../component/redux";
 import { updateJournal } from "../journalStrings/firestoreRedux";
+import PropTypes from "prop-types";
 
-const mapStateToUpdateJournal = (state) => {
+const mapStateToProps = (state) => {
   return state;
 };
 
-const mapDispatchToUpdateJournal = (dispatch) => ({
+const mapDispatchToProps = (dispatch) => ({
   setMsg: (msg) => dispatch(setMsg(msg)),
   updateJournal: (data) => dispatch(updateJournal(data)),
 });
 
-class UpdateJournalConstruct extends Component {
+class UpdateJournal extends Component {
   onJournalUpdate = (formData) => {
     const updateData = {
       ...this.props.journal,
@@ -41,9 +42,10 @@ class UpdateJournalConstruct extends Component {
   }
 }
 
-const UpdateJournal = connect(
-  mapStateToUpdateJournal,
-  mapDispatchToUpdateJournal
-)(UpdateJournalConstruct);
+UpdateJournal.propTypes = {
+  updateJournal: PropTypes.func.isRequired,
+  onFormClose: PropTypes.func.isRequired,
+  journal: PropTypes.object.isRequired,
+};
 
-export default UpdateJournal;
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateJournal);

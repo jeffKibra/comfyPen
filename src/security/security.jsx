@@ -1,19 +1,19 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import db from "../component/dbaccess";
 import { checkKey } from "../component/redux";
+import SecurityComponent from "./securityComponent";
+import Cards from "./cards";
 
-const mapStateToSecurity = (state) => {
+const mapStateToProps = (state) => {
   return state;
 };
 
-const mapDispatchToSecurity = (dispatch) => ({
+const mapDispatchToProps = (dispatch) => ({
   checkKey: (data) => dispatch(checkKey(data)),
 });
 
-class SecurityConstruct extends Component {
+class Security extends Component {
   state = {
     disabled: false,
     pins: [
@@ -66,63 +66,14 @@ class SecurityConstruct extends Component {
     });
     return (
       <>
-        <div className="container unfixed">
-          <div className="row mx-auto  text-center">
-            <div
-              style={{ fontSize: "15rem" }}
-              className="col-12 mx-auto my-0  text-center text-info"
-            >
-              <FontAwesomeIcon icon="user-shield" />
-            </div>
-          </div>
-          <div className="row">
-            <div className="card col-sm-10 mx-auto my-2 text-center bg-info">
-              <div className="card-body">
-                {storageKey ? (
-                  <div className="text-center mx-auto">
-                    <h6>Your journals are safeguarded with a pin!</h6>
-                    {isSetCards}
-                  </div>
-                ) : (
-                  <div className="text-center mx-auto">
-                    <h6>Set a pin to safeguard your journals!</h6>
-                    {notSetCards}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <SecurityComponent
+          storageKey={storageKey}
+          isSetCards={isSetCards}
+          notSetCards={notSetCards}
+        />
       </>
     );
   }
 }
 
-function Cards(props) {
-  const { name, description, path } = props.card;
-  return (
-    <div className="row">
-      <div className=" col-12  text-center">
-        <div className="card-body">
-          <h3 className="card-title">{name}</h3>
-          <p>{description}</p>
-          <Link
-            to={path}
-            className="btn btn-outline-warning"
-            disabled={props.disabled}
-          >
-            {name}
-          </Link>
-        </div>
-      </div>
-      <hr />
-    </div>
-  );
-}
-
-const Security = connect(
-  mapStateToSecurity,
-  mapDispatchToSecurity
-)(SecurityConstruct);
-
-export default Security;
+export default connect(mapStateToProps, mapDispatchToProps)(Security);

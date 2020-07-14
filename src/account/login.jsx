@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
-import LoginForm from "./loginForm";
+import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
-import logo from "../diary144.png";
 import { loginAsync } from "./authRedux";
+import LoginComponent from "./loginComponent";
 
 const mapStateToProps = (state) => state;
 
@@ -26,31 +25,11 @@ function Login(props) {
   const msg = props.custom.msg;
   return (
     <>
-      <div className="card col-sm-6 col-md-4 mx-auto bg-light ">
-        <div className="card-body">
-          <h3 className="card-title">Login</h3>
-          <img
-            src={logo}
-            className=" img-fluid mx-auto d-block card-img-top text-center"
-            style={{ width: "20%", height: "auto" }}
-            alt="ComfyPen logo"
-          />
-
-          <LoginForm
-            msg={msg}
-            status={status}
-            onFormSubmit={handleFormSubmit}
-          />
-
-          <div className="text-center my-2 mx-auto">
-            {/*<Link to="/resetPassword">Forgot password?</Link>{" "}*/}
-            <p className="my-3">
-              Don't have an account? {"  "}
-              <Link to="/signup">signup...</Link>
-            </p>
-          </div>
-        </div>
-      </div>
+      <LoginComponent
+        status={status}
+        msg={msg}
+        handleFormSubmit={handleFormSubmit}
+      />
     </>
   );
 }

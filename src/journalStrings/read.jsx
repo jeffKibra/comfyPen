@@ -5,6 +5,7 @@ import { deleteEntry } from "./firestoreRedux";
 import { setMsg } from "../component/redux";
 import $ from "jquery";
 import Decrypter from "./decrypter";
+import { compose } from "recompose";
 
 const mapDispatchToProps = (dispatch) => ({
   deleteEntry: (data) => dispatch(deleteEntry(data)),
@@ -47,4 +48,7 @@ class ReadOnline extends Component {
   }
 }
 
-export default Decrypter(connect(null, mapDispatchToProps)(ReadOnline));
+export default compose(
+  Decrypter,
+  connect(null, mapDispatchToProps)
+)(ReadOnline);
