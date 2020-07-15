@@ -1,7 +1,15 @@
-import React from "react";
+import React, { cloneElement } from "react";
 import { useForm } from "react-hook-form";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-function PasswordForm(props) {
+const mapStateToProps = (state) => {
+  const { msg, loading } = state.custom;
+  const status = loading;
+  return { msg, status };
+};
+
+function Form(props) {
   const { register, errors, handleSubmit, watch } = useForm({
     mode: "onChange",
   });
@@ -10,15 +18,20 @@ function PasswordForm(props) {
 
   const onFormSubmit = (data, e) => {
     e.target.reset();
-    props.submitForm(data);
+    props.onFormSubmit(data);
   };
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)}>
-      {props.children}
-      <p className="text-danger">{msg}</p>
+      {cloneElement(props.children, { register, errors, watch, status, msg })}
     </form>
   );
 }
 
-export default PasswordForm;
+Form.propTypes = {
+  msg: PropTypes.string.isRequired,
+  status: PropTypes.bool.isRequired,
+  onFormSubmit: PropTypes.func.isRequired,
+};
+
+export default connect(mapStateToProps)(Form);

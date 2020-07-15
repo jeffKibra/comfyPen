@@ -17,7 +17,7 @@ const mapDispatchToPinSignup = (dispatch) => ({
 function PinSignupConstruct(props) {
   const history = useHistory();
   const pinSignup = async (data) => {
-    console.log(data);
+    //console.log(data);
     const hashedPin = await encryptPin(data.pin);
     const keyData = {
       pin: hashedPin,
@@ -28,7 +28,7 @@ function PinSignupConstruct(props) {
         return db.pin.add(keyData);
       })
       .then((val) => {
-        console.log({ val, done: "done" });
+        //console.log({ val, done: "done" });
         props.checkKey({ storageKey: true });
         history.push("/security");
       })

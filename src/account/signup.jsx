@@ -5,11 +5,12 @@ import { compose } from "recompose";
 import { signupAsync, checkEmailAsync, next, prev } from "./authRedux";
 import { setMsg } from "../component/redux";
 import SignupComponent from "./signupComponent";
+import PropTypes from "prop-types";
 
 const mapStateToProps = (state) => {
+  const { current, validated, email } = state.custom;
   const auth = state.firebase.auth;
-  const { email } = state.custom;
-  return { email, auth };
+  return { email, auth, current, validated };
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -21,31 +22,45 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 function Signup(props) {
-  const { email, next, prev } = props;
+  const {
+    email,
+    current,
+    validated,
+    auth,
+    history,
+    next,
+    prev,
+    setMsg,
+    signupAsync,
+    checkEmailAsync,
+  } = props;
 
   useEffect(() => {
-    if (props.auth.uid) {
-      props.history.push("/");
+    if (auth.uid) {
+      history.push("/");
     }
-  }, [props.auth, props.history]);
+  }, [auth, history]);
 
   const validateMail = (data) => {
-    props.checkEmailAsync({ email: data.email });
+    checkEmailAsync({ email: data.email });
   };
 
   const onFormSubmit = (formData) => {
-    props.setMsg({ msg: "" });
+    setMsg({ msg: "" });
     const signupData = {
       ...formData,
       email,
     };
-    props.signupAsync(signupData);
+    signupAsync(signupData);
     //console.log(signupData);
   };
 
   return (
     <>
       <SignupComponent
+        email={email}
+        current={current}
+        validated={validated}
         next={next}
         prev={prev}
         validateMail={validateMail}
@@ -54,6 +69,19 @@ function Signup(props) {
     </>
   );
 }
+
+Signup.propTypes = {
+  email: PropTypes.string,
+  current: PropTypes.number.isRequired,
+  validated: PropTypes.bool.isRequired,
+  auth: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
+  next: PropTypes.func.isRequired,
+  prev: PropTypes.func.isRequired,
+  setMsg: PropTypes.func.isRequired,
+  signupAsync: PropTypes.func.isRequired,
+  checkEmailAsync: PropTypes.func.isRequired,
+};
 
 export default compose(
   withRouter,

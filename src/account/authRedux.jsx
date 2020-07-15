@@ -111,6 +111,7 @@ function checkEmailAsync(emailData) {
   return (dispatch, getState) => {
     dispatch(loading(true));
     dispatch(setMsg({ msg: "" }));
+
     const email = emailData.email;
 
     const checkEmail = functions.httpsCallable("checkEmail");

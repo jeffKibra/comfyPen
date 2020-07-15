@@ -1,10 +1,27 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { StyledFirebaseAuth } from "react-firebaseui";
+import firebase from "../component/fire";
+
+const uiConfig = {
+  //signInFlow: "popup",
+  //signInSuccessUrl: "/account",
+  callbacks: {
+    signInSuccess: () => {
+      return false;
+    },
+  },
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+    firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD,
+  ],
+};
 
 export default function AccountComponent(props) {
   const { auth, profile } = props.firebase;
-  const { uid, email } = auth;
+  const { uid, email, displayName } = auth;
   const { firstName, lastName } = profile;
 
   return (
@@ -12,7 +29,7 @@ export default function AccountComponent(props) {
       <div className="container-fluid unfixed">
         <div className="row mx-auto  text-center">
           <div
-            style={{ fontSize: "15rem" }}
+            style={{ fontSize: "10rem" }}
             className="col-12 mx-auto my-0  text-center text-info"
           >
             <FontAwesomeIcon icon="user-circle" />
@@ -21,43 +38,28 @@ export default function AccountComponent(props) {
             <span>
               {uid ? (
                 <>
-                  <h5>Account Details:</h5>
-                  <p>logged in as: {firstName + "  " + lastName} </p>
-                  <p>email: {email}</p>
+                  <h3>{displayName || firstName + "  " + lastName} </h3>
+                  <h5>{email}</h5>
+                  <Link
+                    to="/logout"
+                    className="btn btn-outline-warning my-5 col-10 col-sm-6 col-md-4"
+                  >
+                    Logout
+                  </Link>
                 </>
               ) : (
-                <p>Please login below to continue</p>
+                <>
+                  <p>Please Sign in below to continue</p>
+                  <StyledFirebaseAuth
+                    uiConfig={uiConfig}
+                    firebaseAuth={firebase.auth()}
+                  />
+                </>
               )}
             </span>
-          </div>
-        </div>
-        <div className="row">
-          <div className="card col-sm-10 mx-auto my-2 text-center bg-info">
-            <div className="card-body">
-              <MyCards cards={props.cards} />
-            </div>
           </div>
         </div>
       </div>
     </>
   );
-}
-
-function MyCards({ cards }) {
-  const loggedInCards = cards.map((card, index) => {
-    const { description, name, path } = card;
-    return (
-      <div className="row">
-        <div className=" col-12  text-center ">
-          <div className="card-body">
-            <p>{description}</p>
-            <Link to={path} className="btn btn-outline-warning">
-              {name}
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  });
-  return <>{loggedInCards}</>;
 }

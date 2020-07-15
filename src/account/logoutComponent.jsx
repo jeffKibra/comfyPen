@@ -10,9 +10,8 @@ function LogoutComponent(props) {
           <>
             <h3 className="card-title">Logout?</h3>
             <p className="card-text">
-              Are you sure you want to logout? Please note that all your unsaved
-              records will be lost. Ensure you save any important entries to
-              your online storage!!
+              Are you sure you want to logout? Please note that this action
+              cannot be undone. Your secret pin will also be deleted! Continue!
             </p>
             <button onClick={onLogout} className="btn btn-outline-info">
               Logout

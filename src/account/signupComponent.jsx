@@ -3,21 +3,14 @@ import logo from "../diary144.png";
 import EmailForm from "./emailForm";
 import PasswordForm from "./passwordForm";
 import SnackBar from "../component/snackBar";
-import { connect } from "react-redux";
-
-const mapStateToProps = (state) => {
-  const { loading, msg, current, validated, email } = state.custom;
-  return { loading, msg, current, validated, email };
-};
+import PropTypes from "prop-types";
 
 function SignupComponent(props) {
+  console.log(props);
   const {
-    msg,
-    loading,
     current,
     validated,
     email,
-    finish,
     next,
     prev,
     validateMail,
@@ -40,9 +33,7 @@ function SignupComponent(props) {
                 next={next}
                 prev={prev}
                 validated={validated}
-                status={loading}
-                msg={msg}
-                validateMail={validateMail}
+                onFormSubmit={validateMail}
               />
             )}
           </div>
@@ -50,14 +41,7 @@ function SignupComponent(props) {
             {current === 1 && (
               <>
                 <h6>{email}</h6>
-                <PasswordForm
-                  finish={finish}
-                  next={next}
-                  prev={prev}
-                  status={loading}
-                  msg={msg}
-                  submitForm={onFormSubmit}
-                />
+                <PasswordForm prev={prev} onFormSubmit={onFormSubmit} />
               </>
             )}
           </div>
@@ -68,4 +52,14 @@ function SignupComponent(props) {
   );
 }
 
-export default connect(mapStateToProps)(SignupComponent);
+SignupComponent.propTypes = {
+  current: PropTypes.number.isRequired,
+  validated: PropTypes.bool,
+  email: PropTypes.string,
+  next: PropTypes.func.isRequired,
+  prev: PropTypes.func.isRequired,
+  validateMail: PropTypes.func.isRequired,
+  onFormSubmit: PropTypes.func.isRequired,
+};
+
+export default SignupComponent;
