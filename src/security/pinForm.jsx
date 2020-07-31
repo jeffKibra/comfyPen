@@ -1,6 +1,7 @@
 import React from "react";
 import Form from "../component/form";
 import PinFormComponent from "./pinFormComponent";
+import PropTypes from "prop-types";
 
 function PinForm(props) {
   return (
@@ -11,5 +12,9 @@ function PinForm(props) {
     </>
   );
 }
+
+PinForm.propTypes = {
+  onFormSubmit: PropTypes.func.isRequired,
+};
 
 export default PinForm;

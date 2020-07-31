@@ -5,22 +5,8 @@ import { compose } from "redux";
 import { connect } from "react-redux";
 import MyDrawer from "./drawer";
 import NavBody from "./navBody";
-
 import { SwipeableDrawer } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-
-const useStyles = makeStyles((theme) => ({
-  root: { flexGrow: 1, backgroundColor: "#17a2b8" },
-  toolBar: { backgroundColor: "#17a2b8" },
-  menuButton: { marginRight: theme.spacing(2) },
-  title: { flexGrow: 1 },
-  list: {
-    width: 250,
-  },
-  fullList: {
-    width: "auto",
-  },
-}));
+import { useStyles } from "../theme/theme";
 
 const mapStateToProps = (state, ownProps) => {
   const path = ownProps.location.pathname
@@ -31,10 +17,29 @@ const mapStateToProps = (state, ownProps) => {
   const journals = state.firestore.data.journals;
   const journal = journals ? journals[journalId] : {};
   const { auth, profile } = state.firebase;
-  return { auth, profile, journalId, journal, loading };
+  const nameArray = auth.displayName ? auth.displayName.split(" ") : [];
+  const { firstName, lastName } = profile;
+  const letter1 = auth.uid
+    ? nameArray[0]
+      ? nameArray[0].charAt(0)
+      : firstName.charAt(0)
+    : "";
+  const letter2 = auth.uid
+    ? nameArray[1]
+      ? nameArray[1].charAt(0)
+      : lastName.charAt(0)
+    : "";
+  const name = {
+    firstName: nameArray[0] || firstName || "",
+    lastName: nameArray[1] || lastName || "",
+    initials: letter1 + letter2,
+  };
+  //console.log({ nameArray, name });
+
+  return { auth, profile, journalId, journal, loading, name };
 };
 
-function MainNavConstruct(props) {
+function MainNav(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -60,10 +65,12 @@ function MainNavConstruct(props) {
     setAnchorEl(null);
   };
 
+  const { journal, loading, name } = props;
+
   return (
     <>
       <NavBody
-        journal={props.journal}
+        journal={journal}
         open={open}
         anchorEl={anchorEl}
         handleClose={handleClose}
@@ -71,8 +78,8 @@ function MainNavConstruct(props) {
         classes={classes}
         toggleDrawer={toggleDrawer}
         popMenu={popMenu}
-        loading={props.loading}
-        profile={props.profile}
+        loading={loading}
+        name={name}
       ></NavBody>
       <SwipeableDrawer
         anchor="left"
@@ -81,63 +88,30 @@ function MainNavConstruct(props) {
         onOpen={toggleDrawer("left", true)}
       >
         <MyDrawer
-          profile={props.profile}
           classes={classes}
           toggleDrawer={toggleDrawer}
           anchor="left"
+          name={name}
         />
       </SwipeableDrawer>
     </>
   );
 }
 
-const MainNav = compose(
+export default compose(
+  withRouter,
   connect(mapStateToProps),
   firestoreConnect((props) => {
-    const { journalId, auth } = props;
-    const arr = journalId
-      ? [
-          {
-            collection: "users",
-            doc: auth?.uid,
-            subcollections: [
-              { collection: "journals", orderBy: ["journalName", "desc"] },
-            ],
-            storeAs: "journals",
-          },
-          {
-            collection: "users",
-            doc: auth?.uid,
-            subcollections: [
-              {
-                collection: "journals",
-                doc: journalId,
-                subcollections: [
-                  {
-                    collection: "entries",
-                    orderBy: ["createdAt", "desc"],
-                    //limit: 10,
-                  },
-                ],
-                storeAs: "entries",
-              },
-            ],
-            storeAs: "entries",
-          },
-        ]
-      : [
-          {
-            collection: "users",
-            doc: auth?.uid,
-            subcollections: [
-              { collection: "journals", orderBy: ["journalName", "desc"] },
-            ],
-            storeAs: "journals",
-          },
-        ];
-    return auth?.uid ? arr : [];
-    // or `todos/${props.todoId}`
-  })
-)(MainNavConstruct);
+    const { auth } = props;
+    const journalListener = {
+      collection: "users",
+      doc: auth?.uid,
+      subcollections: [
+        { collection: "journals", orderBy: ["journalName", "desc"] },
+      ],
+      storeAs: "journals",
+    };
 
-export default withRouter(MainNav);
+    return auth?.uid ? [journalListener] : [];
+  })
+)(MainNav);

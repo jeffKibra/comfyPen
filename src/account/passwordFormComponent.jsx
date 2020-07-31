@@ -4,7 +4,7 @@ import FormInput from "../component/formInput";
 import PropTypes from "prop-types";
 
 function PasswordFormComponent(props) {
-  const { register, errors, watch, status, msg, prev } = props;
+  const { register, errors, watch, status, prev } = props;
 
   return (
     <>
@@ -76,7 +76,6 @@ function PasswordFormComponent(props) {
           <Spinner status={status} />
         </button>
       </div>
-      <p className="text-danger">{msg}</p>
     </>
   );
 }

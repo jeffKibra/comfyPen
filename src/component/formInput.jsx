@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 export default function FormInput(props) {
-  const { register, errors, name, type, registerObject } = props;
+  const { register, errors, name, type, registerObject, defaultValue } = props;
   return (
     <div className="form-group">
       <label htmlFor={name}>
@@ -19,6 +19,7 @@ export default function FormInput(props) {
         name={name}
         className="form-control"
         placeholder={name}
+        defaultValue={defaultValue || ""}
       />
     </div>
   );

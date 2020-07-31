@@ -5,6 +5,8 @@ import { connect } from "react-redux";
 import { checkKey } from "../component/redux";
 import { useHistory } from "react-router-dom";
 import { encryptPin } from "../component/enctype";
+import { Card, CardContent, Grid } from "@material-ui/core";
+import { useStyles } from "../theme/theme";
 
 const mapStateToPinSignup = (state) => {
   return state;
@@ -16,6 +18,7 @@ const mapDispatchToPinSignup = (dispatch) => ({
 
 function PinSignupConstruct(props) {
   const history = useHistory();
+  const classes = useStyles();
   const pinSignup = async (data) => {
     //console.log(data);
     const hashedPin = await encryptPin(data.pin);
@@ -39,11 +42,15 @@ function PinSignupConstruct(props) {
 
   return (
     <>
-      <div className="card  col-sm-6 col-md-4 col-lg-3 mx-auto bg-light my-3">
-        <div className="card-body mx-auto">
-          <KeyForm onSubmit={pinSignup} />
-        </div>
-      </div>
+      <Grid container>
+        <Grid item xs={12} justify="center" alignContent="center" container>
+          <Card className={`${classes.card} ${classes.cardAuth}`}>
+            <CardContent className=" mx-auto">
+              <KeyForm onFormSubmit={pinSignup} />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </>
   );
 }

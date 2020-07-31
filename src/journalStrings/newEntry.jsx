@@ -7,6 +7,10 @@ import { withRouter } from "react-router-dom";
 import { addEntry } from "./firestoreRedux";
 import $ from "jquery";
 import { setMsg } from "../component/redux";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+import ReadBtn from "./readBtn";
+import { useHistory } from "react-router-dom";
 
 const mapStateToProps = (state, ownProps) => {
   const userId = state.firebase.auth.uid;
@@ -21,8 +25,9 @@ const mapDispatchToProps = (dispatch) => ({
   setMsg: (msg) => dispatch(setMsg(msg)),
 });
 
-function NewEntryConstruct(props) {
+function NewEntry(props) {
   const { journal, setMsg, userId } = props;
+  const history = useHistory();
 
   const onNewEntry = (data) => {
     const { entry, customEntry } = data.entry;
@@ -44,13 +49,19 @@ function NewEntryConstruct(props) {
   return (
     <>
       <Writer journal={journal} subject="" entry="" newEntry={onNewEntry} />
+      <ReadBtn read={() => history.goBack()} />
     </>
   );
 }
 
-const NewEntry = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(NewEntryConstruct);
+NewEntry.propTypes = {
+  setMsg: PropTypes.func.isRequired,
+  addEntry: PropTypes.func.isRequired,
+  journal: PropTypes.object.isRequired,
+  userId: PropTypes.string.isRequired,
+};
 
-export default withRouter(NewEntry);
+export default compose(
+  withRouter,
+  connect(mapStateToProps, mapDispatchToProps)
+)(NewEntry);

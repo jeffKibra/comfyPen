@@ -10,7 +10,14 @@ const mapStateToProps = (state) => {
 };
 
 function Form(props) {
-  const { register, errors, handleSubmit, watch } = useForm({
+  const {
+    register,
+    errors,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+  } = useForm({
     mode: "onChange",
   });
 
@@ -23,7 +30,15 @@ function Form(props) {
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)}>
-      {cloneElement(props.children, { register, errors, watch, status, msg })}
+      {cloneElement(props.children, {
+        register,
+        errors,
+        watch,
+        setValue,
+        getValues,
+        status,
+        msg,
+      })}
     </form>
   );
 }

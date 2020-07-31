@@ -4,7 +4,7 @@ import LoginForm from "./loginForm";
 import logo from "../diary144.png";
 
 function LoginComponent(props) {
-  const { status, msg, handleFormSubmit } = props;
+  const { status, handleFormSubmit } = props;
 
   return (
     <>
@@ -18,11 +18,7 @@ function LoginComponent(props) {
             alt="ComfyPen logo"
           />
 
-          <LoginForm
-            msg={msg}
-            status={status}
-            onFormSubmit={handleFormSubmit}
-          />
+          <LoginForm status={status} onFormSubmit={handleFormSubmit} />
 
           <div className="text-center my-2 mx-auto">
             {/*<Link to="/resetPassword">Forgot password?</Link>{" "}*/}

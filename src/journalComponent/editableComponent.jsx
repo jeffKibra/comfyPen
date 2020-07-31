@@ -18,10 +18,8 @@ function EditableComponent(props) {
 
   if (editFormOpen) {
     return (
-      <div className="card col-sm-9 col-md-7 col-lg-6 mx-auto bg-info">
-        <div className="card-body">
-          <UpdateJournal journal={journal} onFormClose={onFormClose} />
-        </div>
+      <div className="mx-auto">
+        <UpdateJournal journal={journal} onFormClose={onFormClose} />
       </div>
     );
   } else {

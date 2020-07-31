@@ -22,14 +22,9 @@ function Login(props) {
   }, [props.firebase.auth, history]);
 
   const status = props.custom.loading;
-  const msg = props.custom.msg;
   return (
     <>
-      <LoginComponent
-        status={status}
-        msg={msg}
-        handleFormSubmit={handleFormSubmit}
-      />
+      <LoginComponent status={status} handleFormSubmit={handleFormSubmit} />
     </>
   );
 }

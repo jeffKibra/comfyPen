@@ -1,21 +1,19 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useHistory } from "react-router-dom";
+import { Fab } from "@material-ui/core";
+import { useStyles } from "../theme/theme";
 
-const ReadBtn = () => {
-  const history = useHistory();
-  const read = () => {
-    history.goBack();
-  };
+const ReadBtn = (props) => {
+  const classes = useStyles();
+  
   return (
-    <button
-      onClick={read}
+    <Fab
+      onClick={props.read}
+      className={`${classes.fab} ${classes.readFab}`}
       aria-controls="write-button"
-      className="btn btn-outline-primary write-btn"
-      style={{ fontSize: "1.5rem" }}
     >
       <FontAwesomeIcon icon="book-open" />
-    </button>
+    </Fab>
   );
 };
 

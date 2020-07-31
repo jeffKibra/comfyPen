@@ -1,6 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import Spinner from "../component/spinner";
+import ThemeType from "../theme/themeType";
 
 import {
   Menu as MaterialMenu,
@@ -10,7 +11,6 @@ import {
   IconButton,
   MenuItem,
 } from "@material-ui/core";
-
 import { MenuOutlined, MoreOutlined } from "@ant-design/icons";
 
 export default function NavBody(props) {
@@ -23,7 +23,7 @@ export default function NavBody(props) {
     open,
     toggleDrawer,
     loading,
-    profile,
+    name,
   } = props;
 
   return (
@@ -47,13 +47,13 @@ export default function NavBody(props) {
             </IconButton>{" "}
             <Typography variant="h6" className={classes.title}>
               {" "}
-              {profile.firstName
-                ? "ComfyPen- " +
-                  profile?.firstName?.charAt(0) +
-                  profile?.lastName?.charAt(0)
-                : "ComfyPen"}{" "}
+              ComfyPen-
+              <span style={{ textTransform: "uppercase" }}>
+                {name.initials}
+              </span>
             </Typography>{" "}
             <Spinner status={loading} />
+            <ThemeType />
             <div>
               {" "}
               <IconButton

@@ -69,11 +69,14 @@ function signupAsync(signupData) {
         });
       //console.log(user);
 
-      await firestore.collection("users").doc(user.uid).set({
-        id: user.uid,
-        firstName: signupData.firstName,
-        lastName: signupData.lastName,
-      });
+      await firestore.collection("users").doc(user.uid).set(
+        {
+          id: user.uid,
+          firstName: signupData.firstName,
+          lastName: signupData.lastName,
+        },
+        { merge: true }
+      );
 
       const db = firestore
         .collection("users")

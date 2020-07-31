@@ -5,7 +5,7 @@ import FormInput from "../component/formInput";
 import FormCheck from "../component/formCheck";
 
 function EmailFormComponent(props) {
-  const { register, errors, watch, status, msg } = props;
+  const { register, errors, watch, status } = props;
 
   return (
     <>
@@ -41,7 +41,6 @@ function EmailFormComponent(props) {
       >
         Check {"  "} <Spinner status={status} />
       </button>
-      <p className="text-danger">{msg}</p>
     </>
   );
 }

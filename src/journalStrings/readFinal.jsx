@@ -2,6 +2,8 @@ import React from "react";
 import sanitizeHtml from "sanitize-html";
 import * as moment from "moment";
 import MoreMenu from "./moreMenu";
+import { Paper, Box, Typography, Divider } from "@material-ui/core";
+import PropTypes from "prop-types";
 
 function ReadFinal(props) {
   const { subject, entry, createdAt } = props.entry;
@@ -15,26 +17,26 @@ function ReadFinal(props) {
   const time = moment(createdAt).format("LTS");
 
   return (
-    <div>
-      <div className="card" style={{ minHeight: "80vh" }}>
-        <div className="card-header row">
-          <div>
-            <h5 className="card-title">{subject}</h5>
-            <small>
-              {date}
-              {"  "} : {"  "}
-              {time}
-            </small>
-          </div>
-          <div className="ml-auto">
+    <div className="container">
+      <Paper style={{ minHeight: "80vh" }}>
+        <Box display="flex" flexDirection="column" m={1}>
+          <Box display="flex" padding={2} alignItems="center">
+            <Box display="flex" flexGrow={1} flexDirection="column">
+              <Typography variant="h5">{subject}</Typography>
+              <Typography variant="caption">{`${date} ${time}`}</Typography>
+            </Box>
             <MoreMenu {...props} />
-          </div>{" "}
-        </div>
-
-        <div className="card-body">{myComponent()}</div>
-      </div>
+          </Box>
+          <Divider />
+          <Box padding={2}>{myComponent()}</Box>
+        </Box>
+      </Paper>
     </div>
   );
 }
+
+ReadFinal.propTypes = {
+  entry: PropTypes.object.isRequired,
+};
 
 export default ReadFinal;

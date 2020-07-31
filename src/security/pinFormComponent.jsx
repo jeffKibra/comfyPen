@@ -1,36 +1,56 @@
 import React from "react";
-import FormInput from "../component/formInput";
+import {
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
+  Grid,
+  Box,
+} from "@material-ui/core";
+import { useStyles } from "../theme/theme";
+import PasswordInput from "../component/passwordInput";
 
 function PinFormComponent(props) {
-  const { register, errors, msg } = props;
+  const { register, errors } = props;
+  const classes = useStyles();
 
   return (
-    <div className="card col-sm-6 col-md-4 col-lg-3 bg-light mx-auto my-3">
-      <div className="card-body mx-auto">
-        <h6 className="form-text ">Enter your pin to continue!</h6>
-        <FormInput
-          name="pin"
-          type="password"
-          register={register}
-          errors={errors}
-          registerObject={{
-            required: {
-              value: true,
-              message: "please provide a pin",
-            },
-            minLength: {
-              value: 4,
-              message: "your pin must be atleast 4 characters long",
-            },
-          }}
-        />
+    <Grid container justify="center" alignContent="center">
+      <Grid item xs={12} justify="center" alignContent="center" container>
+        <Card
+          className={`${classes.card} ${classes.cardAuth} ${classes.margin}`}
+        >
+          <CardContent>
+            <Box display="flex" p={1}>
+              {" "}
+              <Typography variant="h6"> Enter your pin to continue!</Typography>
+            </Box>
+            <PasswordInput
+              name="pin"
+              register={register}
+              registerObject={{
+                required: {
+                  value: true,
+                  message: "please provide a pin",
+                },
+                minLength: {
+                  value: 4,
+                  message: "your pin must be atleast 4 characters long",
+                },
+              }}
+              errors={errors}
+            />
 
-        <button type="submit" className="btn btn-outline-info">
-          Confirm
-        </button>
-        <p className="text-danger">{msg}</p>
-      </div>
-    </div>
+            <CardActions>
+              <Button component="button" type="submit">
+                continue
+              </Button>
+            </CardActions>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   );
 }
 

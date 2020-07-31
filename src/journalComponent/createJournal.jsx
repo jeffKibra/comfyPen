@@ -8,7 +8,10 @@ import CreateJournalComponent from "./createJournalComponent";
 import PropTypes from "prop-types";
 
 const mapStateToProps = (state) => {
-  return state;
+  const { firestore, custom } = state;
+  const status = custom.loading;
+  const { journals } = firestore.ordered;
+  return { status, journals };
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -18,12 +21,11 @@ const mapDispatchToProps = (dispatch) => ({
 
 class CreateJournal extends Component {
   state = {
-    alowed: false,
     isOpen: false,
   };
 
   onFormOpen = () => {
-    this.setState({ status: false, isOpen: true });
+    this.setState({ isOpen: true });
   };
 
   onFormClose = () => {
@@ -38,6 +40,7 @@ class CreateJournal extends Component {
       journalDescription: formData.journalDescription,
       journalId: uuid(),
       createdAt: new Date().toISOString(),
+      entries: 0,
     };
 
     this.props.newJournal(journalData);
@@ -45,13 +48,12 @@ class CreateJournal extends Component {
   };
 
   render() {
-    const { isOpen, allowed } = this.state;
+    const { isOpen } = this.state;
     const { status } = this.props;
     return (
       <>
         <CreateJournalComponent
           isOpen={isOpen}
-          allowed={allowed}
           onFormOpen={this.onFormOpen}
           onFormClose={this.onFormClose}
           onFormSubmit={this.onFormSubmit}

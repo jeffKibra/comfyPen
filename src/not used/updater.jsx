@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import Writer from "./writer";
+import Writer from "../journalStrings/writer";
 import { connect } from "react-redux";
-import { updateEntry } from "./firestoreRedux";
+import { updateEntry } from "../journalStrings/firestoreRedux";
 import $ from "jquery";
 import { setMsg } from "../component/redux";
-import Decrypter from "./decrypter";
+import Decrypter from "../journalStrings/decrypter";
 import { compose } from "recompose";
+import PropTypes from "prop-types";
 
 const mapDispatchToProps = (dispatch) => ({
   updateEntry: (data) => dispatch(updateEntry(data)),
@@ -48,6 +49,12 @@ class UpdaterOnline extends Component {
     );
   }
 }
+
+UpdaterOnline.propTypes = {
+  updateEntry: PropTypes.func.isRequired,
+  setMsg: PropTypes.func.isRequired,
+  entry: PropTypes.object.isRequired,
+};
 
 export default compose(
   Decrypter,

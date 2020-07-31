@@ -21,6 +21,7 @@ class UpdateJournal extends Component {
       journalName: formData.journalName,
       journalDescription: formData.journalDescription,
     };
+    //console.log(formData);
 
     this.props.updateJournal(updateData);
     this.props.onFormClose();
@@ -31,7 +32,6 @@ class UpdateJournal extends Component {
     const { journalName, journalDescription } = this.props.journal;
     return (
       <JournalForm
-        msg={this.props.msg}
         journalName={journalName}
         journalDescription={journalDescription}
         onFormSubmit={this.onJournalUpdate}

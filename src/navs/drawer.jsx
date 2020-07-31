@@ -9,10 +9,12 @@ import {
   ListItemIcon,
   ListItem,
   ListItemText,
+  ListItemAvatar,
+  Avatar,
 } from "@material-ui/core";
 
 export default function MyDrawer(props) {
-  const { anchor, classes, toggleDrawer, profile } = props;
+  const { anchor, classes, toggleDrawer, name } = props;
 
   return (
     <div
@@ -25,13 +27,11 @@ export default function MyDrawer(props) {
     >
       <List>
         <ListItem button>
-          <ListItemText
-            primary={
-              profile.firstName
-                ? profile.firstName + "  " + profile.lastName
-                : "Menu"
-            }
-          />
+          <ListItemAvatar>
+            <Avatar>{name.initials}</Avatar>
+          </ListItemAvatar>
+
+          <ListItemText primary={name.firstName + " " + name.lastName} />
         </ListItem>
         <Divider />
         <Link to="/" style={{ color: "#000" }}>
@@ -58,6 +58,15 @@ export default function MyDrawer(props) {
               <FontAwesomeIcon icon="user-shield" />
             </ListItemIcon>
             <ListItemText primary="privacy" />
+          </ListItem>
+        </Link>
+
+        <Link to="/theme" style={{ color: "#000" }}>
+          <ListItem button>
+            <ListItemIcon>
+              <FontAwesomeIcon icon="paint-brush" />
+            </ListItemIcon>
+            <ListItemText primary="theme" />
           </ListItem>
         </Link>
       </List>

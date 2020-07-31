@@ -7,16 +7,16 @@ import PinForm from "./pinForm";
 import $ from "jquery";
 import { encryptPin } from "../component/enctype";
 
-const mapStateToPinDiscard = (state) => {
+const mapStateToProps = (state) => {
   return state;
 };
 
-const mapDispatchToPinDiscard = (dispatch) => ({
+const mapDispatchToProps = (dispatch) => ({
   checkKey: (data) => dispatch(checkKey(data)),
   setMsg: (msg) => dispatch(setMsg(msg)),
 });
 
-function PinDiscardConstruct(props) {
+function PinDiscard(props) {
   const history = useHistory();
   const discard = async (data) => {
     const hashedPin = await encryptPin(data.pin);
@@ -41,14 +41,9 @@ function PinDiscardConstruct(props) {
 
   return (
     <>
-      <PinForm next={discard} />
+      <PinForm onFormSubmit={discard} />
     </>
   );
 }
 
-const PinDiscard = connect(
-  mapStateToPinDiscard,
-  mapDispatchToPinDiscard
-)(PinDiscardConstruct);
-
-export default PinDiscard;
+export default connect(mapStateToProps, mapDispatchToProps)(PinDiscard);

@@ -1,38 +1,45 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Paper, Typography, Grid } from "@material-ui/core";
 
 function SecurityComponent(props) {
-  const { storageKey, isSetCards, notSetCards } = props;
+  const { storageKey, isSetCards, notSetCards, classes } = props;
 
   return (
     <>
-      <div className="container unfixed">
-        <div className="row mx-auto  text-center">
-          <div
-            style={{ fontSize: "15rem" }}
-            className="col-12 mx-auto my-0  text-center text-info"
-          >
-            <FontAwesomeIcon icon="user-shield" />
-          </div>
-        </div>
-        <div className="row">
-          <div className="card col-sm-10 mx-auto my-2 text-center bg-info">
-            <div className="card-body">
-              {storageKey ? (
-                <div className="text-center mx-auto">
-                  <h6>Your journals are safeguarded with a pin!</h6>
-                  {isSetCards}
-                </div>
-              ) : (
-                <div className="text-center mx-auto">
-                  <h6>Set a pin to safeguard your journals!</h6>
-                  {notSetCards}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      <Grid container justify="center" alignContent="center">
+        <Grid
+          item
+          xs={12}
+          className={`${classes.mainIcon} ${classes.margin} `}
+          justify="center"
+          alignContent="center"
+          container
+        >
+          <FontAwesomeIcon icon="user-shield" />
+        </Grid>
+        <Grid item xs={12} sm={10}>
+          <Paper className={`${classes.card} `}>
+            {storageKey ? (
+              <div className="text-center mx-auto">
+                <Typography variant="h6" component="h6">
+                  Your journals are safeguarded with a pin!
+                </Typography>
+
+                {isSetCards}
+              </div>
+            ) : (
+              <div className="text-center mx-auto">
+                <Typography variant="h6" component="h6">
+                  Set a pin to safeguard your journals!
+                </Typography>
+
+                {notSetCards}
+              </div>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
     </>
   );
 }

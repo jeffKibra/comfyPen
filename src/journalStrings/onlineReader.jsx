@@ -1,9 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import OnlineList from "./onlineList";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { compose } from "recompose";
+import { Fab } from "@material-ui/core";
+import { useStyles } from "../theme/theme";
+import PropTypes from "prop-types";
+import { firestoreConnect } from "react-redux-firebase";
 
 const mapStateToProps = (state, ownProps) => {
   const journalId = ownProps.match.params.journalId;
@@ -16,25 +20,57 @@ const mapStateToProps = (state, ownProps) => {
   return { journal, entries, auth, journalId };
 };
 
-function OnlineReaderConstruct(props) {
+function OnlineReader(props) {
+  //console.log(props);
   const journalId = props.match.params.journalId;
+  const history = props.history;
   const { entries, journal } = props;
+  const classes = useStyles();
+
+  const write = () => {
+    history.push("/write/" + journalId);
+  };
 
   return (
     <>
       <OnlineList journal={journal} entries={entries} />
-      <Link
-        to={"/write/" + journalId}
-        aria-controls="write-Link"
-        className="btn btn-outline-primary write-btn"
-      >
+      <Fab onClick={write} className={classes.fab} aria-controls="write-Link">
         <FontAwesomeIcon icon="pen-alt" />
-      </Link>
+      </Fab>
     </>
   );
 }
 
+OnlineReader.propTypes = {
+  journal: PropTypes.object.isRequired,
+  entries: PropTypes.array.isRequired,
+};
+
 export default compose(
   withRouter,
-  connect(mapStateToProps)
-)(OnlineReaderConstruct);
+  connect(mapStateToProps),
+  firestoreConnect((props) => {
+    const { journalId, auth } = props;
+    const entriesListener = {
+      collection: "users",
+      doc: auth?.uid,
+      subcollections: [
+        {
+          collection: "journals",
+          doc: journalId,
+          subcollections: [
+            {
+              collection: "entries",
+              orderBy: ["createdAt", "desc"],
+              //limit: 10,
+            },
+          ],
+          storeAs: "entries",
+        },
+      ],
+      storeAs: "entries",
+    };
+
+    return journalId ? [entriesListener] : [];
+  })
+)(OnlineReader);

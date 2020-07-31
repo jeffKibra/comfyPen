@@ -4,7 +4,7 @@ import FormInput from "../component/formInput";
 import PropTypes from "prop-types";
 
 function LoginFormComponent(props) {
-  const { register, errors, status, msg } = props;
+  const { register, errors, status } = props;
 
   return (
     <>
@@ -48,7 +48,6 @@ function LoginFormComponent(props) {
           <Spinner status={status} />
         </button>
         {"  "}
-        <span className="text-danger">{msg}</span>
       </span>
     </>
   );

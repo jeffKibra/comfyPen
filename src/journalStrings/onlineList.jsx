@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
 import { Link, withRouter } from "react-router-dom";
 import * as moment from "moment";
 import { compose } from "recompose";
@@ -15,29 +14,8 @@ import {
   ListItemAvatar,
   ListSubheader,
 } from "@material-ui/core";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    maxWidth: "100vw",
-    backgroundColor: theme.palette.background.paper,
-    position: "relative",
-    overflow: "auto",
-  },
-  listSection: {
-    backgroundColor: "inherit",
-  },
-  ul: {
-    backgroundColor: "inherit",
-    padding: 0,
-  },
-  inline: {
-    display: "inline",
-  },
-  listItem: {
-    cursor: "pointer",
-  },
-}));
+import { useStyles } from "../theme/theme";
+import PropTypes from "prop-types";
 
 const mapStateToProps = (state) => {
   return state;
@@ -46,7 +24,8 @@ const mapStateToProps = (state) => {
 function OnlineList(props) {
   const classes = useStyles();
 
-  const { entries, journal } = props;
+  const { entries, journal, match } = props;
+  const { journalId } = match.params;
 
   const savedJournal = entries.map((entry, index) => {
     const { subject, createdAt, entryId } = entry;
@@ -57,7 +36,7 @@ function OnlineList(props) {
     return (
       <Link
         to={{
-          pathname: "/read/" + entryId,
+          pathname: "/read/" + journalId + ":" + entryId,
           state: { from: props.location },
         }}
         key={index}
@@ -73,9 +52,9 @@ function OnlineList(props) {
               <React.Fragment>
                 <Typography
                   component="span"
-                  variant="body2"
-                  className={classes.inline}
-                  color="textPrimary"
+                  variant="caption"
+                  className={classes.listInline}
+                  //color="textPrimary"
                 >
                   {`${date} - ${time}`}
                 </Typography>
@@ -90,10 +69,12 @@ function OnlineList(props) {
 
   return (
     <div className="container">
-      <List className={classes.root}>
+      <List className={classes.listRoot}>
         <ListSubheader>
-          <Badge badgeContent={entries.length} color="primary">
-            <h6>{journal.journalName ? journal.journalName : "My Notes"}</h6>
+          <Badge badgeContent={entries.length || 0} color="primary">
+            <Typography variant="subtitle1">
+              {journal.journalName ? journal.journalName : "My Notes"}
+            </Typography>
           </Badge>
         </ListSubheader>
         <Divider component="li" />
@@ -102,5 +83,10 @@ function OnlineList(props) {
     </div>
   );
 }
+
+OnlineList.propTypes = {
+  journal: PropTypes.object.isRequired,
+  entries: PropTypes.array.isRequired,
+};
 
 export default compose(withRouter, connect(mapStateToProps))(OnlineList);

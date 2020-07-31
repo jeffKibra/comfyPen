@@ -1,18 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Menu as MaterialMenu, IconButton, MenuItem } from "@material-ui/core";
 import { MoreOutlined } from "@ant-design/icons";
-import Confirm from "./confirm";
+import DeleteDialogue from "./deleteDialogue";
+import PropTypes from "prop-types";
 
 export default function MoreMenu(props) {
-  const {
-    anchorEl,
-    handleMenu,
-    handleClose,
-    open,
-    entry,
-    onTrashClick,
-  } = props;
+  const { anchorEl, handleMenu, handleClose, open, onTrashClick, edit } = props;
   return (
     <>
       <IconButton
@@ -35,13 +28,21 @@ export default function MoreMenu(props) {
         onClose={handleClose}
       >
         {" "}
-        <Link to={"/edit/" + entry.entryId} style={{ color: "#000" }}>
-          <MenuItem onClick={handleClose}>edit</MenuItem>{" "}
-        </Link>
+        <MenuItem onClick={edit}>edit</MenuItem>{" "}
         <MenuItem onClick={handleClose}>
-          <Confirm onTrashClick={onTrashClick} />
+          <DeleteDialogue onTrashClick={onTrashClick} />
         </MenuItem>{" "}
       </MaterialMenu>{" "}
     </>
   );
 }
+
+MoreMenu.propTypes = {
+  edit: PropTypes.func.isRequired,
+  anchorEl: PropTypes.any,
+  handleMenu: PropTypes.func.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  entry: PropTypes.object.isRequired,
+  onTrashClick: PropTypes.func.isRequired,
+};

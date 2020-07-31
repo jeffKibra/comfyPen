@@ -34,7 +34,7 @@ function Main(props) {
   const { myJournals } = props;
 
   return (
-    <div>
+    <div className="container">
       <div className="row">{myJournals}</div>
       <div className="row">
         {" "}

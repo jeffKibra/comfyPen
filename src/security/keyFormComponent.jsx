@@ -1,16 +1,19 @@
 import React from "react";
-import FormInput from "../component/formInput";
+import { Typography, Button, Box } from "@material-ui/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PasswordInput from "../component/passwordInput";
 
 const KeyFormComponent = (props) => {
   const { register, errors, watch } = props;
 
   return (
     <>
-      <h6 className="form-text">Please create a pin to secure your journals</h6>
-      <FormInput
+      <Box p={1}>
+        <Typography variant="h6">Set a pin!</Typography>
+      </Box>
+
+      <PasswordInput
         name="pin"
-        type="password"
-        errors={errors}
         register={register}
         registerObject={{
           required: {
@@ -22,12 +25,11 @@ const KeyFormComponent = (props) => {
             message: "your pin must be atleast 4 characters long",
           },
         }}
+        errors={errors}
       />
 
-      <FormInput
+      <PasswordInput
         name="confirmPin"
-        type="password"
-        errors={errors}
         register={register}
         registerObject={{
           validate: (value) => value === watch("pin") || "pins do not match",
@@ -36,11 +38,18 @@ const KeyFormComponent = (props) => {
             message: "please confirm your pin",
           },
         }}
+        errors={errors}
       />
 
-      <button type="submit" className="btn btn-outline-info">
-        create
-      </button>
+      <Box p={1}>
+        <Button
+          endIcon={<FontAwesomeIcon icon="save" />}
+          component="button"
+          type="submit"
+        >
+          save
+        </Button>
+      </Box>
     </>
   );
 };

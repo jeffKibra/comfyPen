@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import { isLogged } from "../component/redux";
 import { connect } from "react-redux";
 import AccountComponent from "./accountComponent";
 import PropTypes from "prop-types";
+import { useStyles } from "../theme/theme";
 
 const mapStateToProps = (state) => {
   const { firebase } = state;
@@ -14,30 +15,31 @@ const mapDispatchToProps = (dispatch) => ({
   isLogged: (data) => dispatch(isLogged(data)),
 });
 
-class Account extends Component {
-  state = {
+function Account(props) {
+  const classes = useStyles();
+  const body = [
+    {
+      name: "logout",
+      description: "Do a clean up",
+      path: "/logout",
+    },
+  ];
+
+  /*state = {
     loggedIn: [],
     loggedOut: [],
-    body: [
-      {
-        name: "logout",
-        description: "Do a clean up",
-        path: "/logout",
-      },
-    ],
-  };
+    
+  };*/
 
-  render() {
-    console.log(this.props);
-    const { body } = this.state;
-    const { firebase } = this.props;
+  //console.log(props);
 
-    return (
-      <>
-        <AccountComponent firebase={firebase} cards={body} />
-      </>
-    );
-  }
+  const { firebase } = props;
+
+  return (
+    <>
+      <AccountComponent classes={classes} firebase={firebase} cards={body} />
+    </>
+  );
 }
 
 Account.propTypes = {

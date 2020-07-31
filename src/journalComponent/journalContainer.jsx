@@ -4,7 +4,6 @@ import { journalList, checkKey, isLogged } from "../component/redux";
 import db from "../component/dbaccess";
 import JournalComponent from "./journalComponent";
 import PinLogin from "../security/pinLogin";
-import MainBackdrop from "../component/backdrop";
 
 const mapStateToProps = (state) => {
   return state;
@@ -29,21 +28,16 @@ class JournalContainer extends Component {
   }
 
   render() {
-    const journals = this.props.firestore.ordered?.journals;
     return (
       <>
-        {journals?.length ? (
-          this.props.custom.storageKey ? (
-            this.props.custom.securityKey ? (
-              <JournalComponent />
-            ) : (
-              <PinLogin />
-            )
-          ) : (
+        {this.props.custom.storageKey ? (
+          this.props.custom.securityKey ? (
             <JournalComponent />
+          ) : (
+            <PinLogin />
           )
         ) : (
-          <MainBackdrop status={this.props.custom.loading} />
+          <JournalComponent />
         )}
       </>
     );

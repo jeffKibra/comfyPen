@@ -1,59 +1,46 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { decrypt } from "../component/enctype";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
 import MainBackdrop from "../component/backdrop";
 
-const mapStateToProps = (state, ownProps) => {
-  const entryId = ownProps.match.params.entryId;
-  const { email } = state.firebase.auth;
-  const { entries } = state.firestore.data;
-  const entry = entries ? entries[entryId] : {};
-  return { entry, email };
-};
-
 export default function Decrypter(WrappedComponent) {
-  class HOC extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        entry: {},
-      };
-    }
+  function HOC(props) {
+    const [state, setState] = useState({ entry: {} });
+    const { entry, history, email } = props;
 
-    componentDidMount() {
-      if (!this.props.entry.entryId) {
-        return this.props.history.goBack();
+    useEffect(() => {
+      if (!entry.entryId) {
+        return history.goBack();
       }
-      const { email, entry } = this.props;
-      const customEntry = entry.customEntry;
-      if (!!customEntry) {
-        this.decryptEntry(entry, email);
-      } else {
-        this.setState({ entry });
+      decryptEntry(entry);
+      //console.log(entry, "entry changed");
+      async function decryptEntry() {
+        const customEntry = entry?.customEntry;
+        if (!!customEntry) {
+          const decrypted = await decrypt(
+            entry.entry,
+            email,
+            entry.customEntry
+          );
+          setState({ entry: { ...entry, entry: decrypted } });
+          //return decrypted;
+        } else {
+          setState({ entry });
+        }
       }
-    }
+    }, [entry, email, history]);
 
-    decryptEntry = async (entry, email) => {
-      const decrypted = await decrypt(entry.entry, email, entry.customEntry);
-      this.setState({ entry: { ...entry, entry: decrypted } });
-      //return decrypted;
-    };
+    //console.log(state);
+    const entryId = state.entry.entryId;
 
-    render() {
-      const entryId = this.state.entry.entryId;
-      return (
-        <>
-          {entryId ? (
-            <WrappedComponent {...this.props} entry={this.state.entry} />
-          ) : (
-            <MainBackdrop status={!!entryId} />
-          )}
-        </>
-      );
-    }
+    return (
+      <>
+        {entryId ? (
+          <WrappedComponent {...props} entry={state.entry} />
+        ) : (
+          <MainBackdrop status={!!entryId} />
+        )}
+      </>
+    );
   }
-
-  const returnEl = connect(mapStateToProps)(HOC);
-  return withRouter(returnEl);
+  return HOC;
 }
