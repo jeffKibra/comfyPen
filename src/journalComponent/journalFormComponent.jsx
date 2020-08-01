@@ -118,8 +118,6 @@ function JournalFormComponent(props) {
 JournalFormComponent.propTypes = {
   register: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,
-  status: PropTypes.bool.isRequired,
-  msg: PropTypes.string,
   btnText: PropTypes.string.isRequired,
   journalName: PropTypes.string.isRequired,
   journalDescription: PropTypes.string.isRequired,

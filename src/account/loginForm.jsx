@@ -1,16 +1,14 @@
 import React from "react";
-import Form from "../component/form";
+import FormHOC from "../component/formHOC";
 import LoginFormComponent from "./loginFormComponent";
 
 function LoginForm(props) {
-  const { onFormSubmit } = props;
+  const { register, errors } = props;
   return (
     <>
-      <Form onFormSubmit={onFormSubmit}>
-        <LoginFormComponent />
-      </Form>
+      <LoginFormComponent register={register} errors={errors} />
     </>
   );
 }
 
-export default LoginForm;
+export default FormHOC(LoginForm);

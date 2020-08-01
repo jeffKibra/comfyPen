@@ -4,16 +4,19 @@ import TinymceEditor from "./tinymceEditor";
 import { encrypt } from "../component/enctype";
 import { connect } from "react-redux";
 import { uuid } from "uuidv4";
-import Form from "../component/form";
 import PropTypes from "prop-types";
+import { compose } from "recompose";
+import { withRouter } from "react-router-dom";
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
   const { auth } = state.firebase;
-  return { auth };
+  const { journalId } = ownProps.match.params;
+  return { auth, journalId };
 };
 
 function Writer(props) {
-  const { entry, subject, auth, newEntry, status, journal } = props;
+  //console.log(props);
+  const { entry, subject, auth, newEntry, status, journalId } = props;
   const onFormSubmit = async (content) => {
     //console.log(content);
     let customEntry = uuid();
@@ -32,14 +35,13 @@ function Writer(props) {
 
   return (
     <>
-      <Form onFormSubmit={onFormSubmit}>
-        <TinymceEditor
-          journalId={journal.journalId}
-          status={status}
-          entry={entry}
-          subject={subject}
-        />
-      </Form>
+      <TinymceEditor
+        journalId={journalId}
+        status={status}
+        entry={entry}
+        subject={subject}
+        onFormSubmit={onFormSubmit}
+      />
     </>
   );
 }
@@ -51,4 +53,4 @@ Writer.propTypes = {
   auth: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps)(Writer);
+export default compose(withRouter, connect(mapStateToProps))(Writer);

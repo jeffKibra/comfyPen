@@ -89,7 +89,7 @@ function updateJournal(journalData) {
     //dispatch(loading());
     const { journalId } = journalData;
     const userId = getState().firebase.auth.uid;
-    console.log({ userId, journalId, journalData });
+    //console.log({ userId, journalId, journalData });
     const firestore = getFirestore();
     firestore
       .collection("users")
@@ -115,7 +115,7 @@ function newJournal(journalData) {
     //dispatch(loading());
     const { journalId } = journalData;
     const userId = getState().firebase.auth.uid;
-    console.log({ userId, journalId, journalData });
+    //console.log({ userId, journalId, journalData });
     const firestore = getFirestore();
     firestore
       .collection("users")

@@ -1,16 +1,14 @@
 import React from "react";
-import Form from "../component/form";
+import FormHOC from "../component/formHOC";
 import EmailFormComponent from "./emailFormComponent";
 
 function EmailForm(props) {
-  const { onFormSubmit } = props;
+  const { register, errors } = props;
   return (
     <>
-      <Form onFormSubmit={onFormSubmit}>
-        <EmailFormComponent />
-      </Form>
+      <EmailFormComponent register={register} errors={errors} />
     </>
   );
 }
 
-export default EmailForm;
+export default FormHOC(EmailForm);

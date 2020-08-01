@@ -1,16 +1,19 @@
 import React from "react";
-import Form from "../component/form";
+import FormHOC from "../component/formHOC";
 import PasswordFormComponent from "./passwordFormComponent";
 
 function PasswordForm(props) {
-  const { onFormSubmit, prev } = props;
+  const { register, errors, watch, prev } = props;
   return (
     <>
-      <Form onFormSubmit={onFormSubmit}>
-        <PasswordFormComponent prev={prev} />
-      </Form>
+      <PasswordFormComponent
+        register={register}
+        errors={errors}
+        watch={watch}
+        prev={prev}
+      />
     </>
   );
 }
 
-export default PasswordForm;
+export default FormHOC(PasswordForm);

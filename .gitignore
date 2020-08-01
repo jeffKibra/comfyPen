@@ -13,6 +13,8 @@
 
 #env file
 .env
+.env.production
+.env.production
 
 #encryption file
 src/component/enctype.js

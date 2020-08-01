@@ -1,11 +1,13 @@
 import React from "react";
 import JournalFormComponent from "./journalFormComponent";
-import Form from "../component/form";
 import PropTypes from "prop-types";
+import FormHOC from "../component/formHOC";
 
 function JournalForm(props) {
+  //console.log(props);
   const {
-    onFormSubmit,
+    register,
+    errors,
     onFormClose,
     btnText,
     journalName,
@@ -13,14 +15,14 @@ function JournalForm(props) {
   } = props;
   return (
     <>
-      <Form onFormSubmit={onFormSubmit}>
-        <JournalFormComponent
-          onFormClose={onFormClose}
-          btnText={btnText}
-          journalName={journalName}
-          journalDescription={journalDescription}
-        />
-      </Form>
+      <JournalFormComponent
+        register={register}
+        errors={errors}
+        onFormClose={onFormClose}
+        btnText={btnText}
+        journalName={journalName}
+        journalDescription={journalDescription}
+      />
     </>
   );
 }
@@ -29,4 +31,4 @@ JournalForm.propTypes = {
   onFormSubmit: PropTypes.func.isRequired,
 };
 
-export default JournalForm;
+export default FormHOC(JournalForm);

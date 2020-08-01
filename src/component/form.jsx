@@ -30,15 +30,16 @@ function Form(props) {
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)}>
-      {cloneElement(props.children, {
-        register,
-        errors,
-        watch,
-        setValue,
-        getValues,
-        status,
-        msg,
-      })}
+      {!!register &&
+        cloneElement(props.children, {
+          register,
+          errors,
+          watch,
+          setValue,
+          getValues,
+          status,
+          msg,
+        })}
     </form>
   );
 }
